@@ -1,0 +1,64 @@
+#define LCD_ADDR 0x27
+#define LCD_COLS 20
+#define LCD_ROWS 4
+
+#include "ui.hpp"
+#include "button.hpp"
+#include <Arduino.h>
+#include <util/type.hpp>
+
+// ui
+I2C screen(LCD_ADDR, LCD_COLS, LCD_ROWS);
+
+ui::elem_t* elem1;
+ui::elem_t* elem2;
+ui::elem_t* elem3;
+ui::group_t* group;
+
+button::butt_t* butt1;
+button::butt_t* butt2;
+button::butt_t* butt3;
+
+void setup() {
+	screen.init();
+	elem1 = ui::make("Welcome", ui::TEXT);
+	elem2 = ui::make("Opt1", ui::OPT);
+	elem3 = ui::make("Opt2", ui::OPT);
+	group = ui::group(&screen, 3, elem1, elem2, elem3);
+
+	butt1 = button::make(27);
+	butt2 = button::make(12);
+	butt3 = button::make(14);
+
+	Serial.begin(9600);
+}
+
+static void handle_select(struct ui::selector_in info) {
+	switch (info.id) {
+	case 0:
+		Serial.println("Invalid");
+		break;
+	case 1:
+		Serial.println("Opt1");
+		break;
+	case 2:
+		Serial.println("Opt2");
+		break;
+	default:
+		break;
+	}
+}
+
+void loop() {
+	ui::show(group);
+
+	if (button::state(butt1)) {
+		handle_select(ui::selector_on(group));
+	} else if (button::state(butt2)) {
+		ui::selector_up(group);
+	} else if (button::state(butt3)) {
+		ui::selector_down(group);
+	}
+
+	delay(1000);
+}
