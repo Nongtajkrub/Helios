@@ -71,25 +71,27 @@ namespace ui {
 	}
 
 	void selector_up(group_t* group) {
-		// move up untill find an option element
-		// or untill reach top row
-		for (i8 i = group->select; i >= 0; i--) {
+		// move up skipping the currently selected option 
+		// untill find an option or untill reach top row
+		for (i8 i = group->select - 1; i >= 0; i--) {
 			elem_t* elem = group->elems[i];
 
 			if (elem->type == OPT) {
 				group->select = elem->id;
+				return;
 			}
 		}
 	}
 
 	void selector_down(group_t* group) {
-		// move down untill find an option element
-		// or untill reach bottom row
-		for (u8 i = group->select; i != group->count; i++) {
+		// move down skipping the currently selected option 
+		// untill find an option or untill reach bottom row
+		for (u8 i = group->select + 1; i != group->count; i++) {
 			elem_t* elem = group->elems[i];
 
 			if (elem->type == OPT) {
 				group->select = elem->id;
+				return;
 			}
 		}
 	}
