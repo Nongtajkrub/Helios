@@ -15,8 +15,9 @@ typedef LiquidCrystal_I2C I2C;
 
 namespace ui {
 	typedef enum : u8 {
-		TEXT,
-		OPT
+		TXT,
+		OPT,
+		SEL
 	} type_t;
 
 	// ui element

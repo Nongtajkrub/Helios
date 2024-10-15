@@ -26,7 +26,7 @@ np::pixel_t* pixel;
 
 void setup() {
 	screen.init();
-	elem1 = ui::make("Welcome", ui::TEXT);
+	elem1 = ui::make("Welcome", ui::TXT);
 	elem2 = ui::make("Opt1", ui::OPT);
 	elem3 = ui::make("Opt2", ui::OPT);
 	elem4 = ui::make("Opt3", ui::OPT);

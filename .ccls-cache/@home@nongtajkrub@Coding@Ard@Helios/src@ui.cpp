@@ -17,6 +17,7 @@ namespace ui {
 		elem->id = 0;
 
 		elem->text = (char*)malloc(TEXT_SIZE);
+		memset(elem->text, '\0', TEXT_SIZE);
 		memcpy(elem->text, text, TEXT_SIZE);
 
 		return elem;
@@ -108,18 +109,12 @@ namespace ui {
 		return info;
 	}
 
-	static void show_handle_text(
-			group_t* group,
-			elem_t* elem
-		) {
+	static void show_handle_txt(group_t* group, elem_t* elem) {
 		group->screen->setCursor(0, elem->id);
 		group->screen->print(elem->text);
 	}
 
-	static void show_handle_opt(
-			group_t* group,
-			elem_t* elem
-		) {
+	static void show_handle_opt(group_t* group, elem_t* elem) {
 		group->screen->setCursor(0, elem->id);
 		
 		if (elem->id == group->select) {
@@ -137,11 +132,13 @@ namespace ui {
 			elem_t* elem = group->elems[i];
 
 			switch (elem->type) {
-			case TEXT:
-				show_handle_text(group, elem);
+			case TXT:
+				show_handle_txt(group, elem);
 				break;
 			case OPT:
 				show_handle_opt(group, elem);
+				break;
+			case SEL:
 				break;
 			}
 		}
