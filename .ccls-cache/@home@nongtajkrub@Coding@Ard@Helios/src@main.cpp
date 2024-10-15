@@ -14,6 +14,8 @@ ui::elem_t* elem1;
 ui::elem_t* elem2;
 ui::elem_t* elem3;
 ui::elem_t* elem4;
+ui::elem_t* elem5;
+ui::elem_t* elem6;
 ui::group_t* group;
 
 button::butt_t* butt1;
@@ -30,7 +32,20 @@ void setup() {
 	elem2 = ui::make("Opt1", ui::OPT);
 	elem3 = ui::make("Opt2", ui::OPT);
 	elem4 = ui::make("Opt3", ui::OPT);
-	group = ui::group(&screen, 4, elem1, elem2, elem3, elem4);
+	elem5 = ui::make("Opt4", ui::OPT);
+	elem6 = ui::make("Opt5", ui::OPT);
+	group = ui::group(
+			&screen,
+			LCD_ROWS,
+			LCD_COLS,
+			6,
+			elem1,
+			elem2,
+			elem3,
+			elem4,
+			elem5,
+			elem6
+			);
 
 	butt1 = button::make(27);
 	butt2 = button::make(12);

@@ -36,7 +36,7 @@ namespace ui {
 	}
 
 	// use int for count to prevent argument promotion
-	group_t* group(I2C* screen, int count, ...) {
+	group_t* group(I2C* screen, u8 rows, u8 cols, int count, ...) {
 		group_t* group = (group_t*)malloc(GROUP_SIZE);
 		va_list elems;
 		va_start(elems, count);
@@ -44,6 +44,8 @@ namespace ui {
 		group->count  = count;
 		group->select = 0;
 		group->screen = screen;
+		group->rows   = rows;
+		group->cols   = cols;
 		group->elems  = (elem_t**)calloc(count, ELEM_PTR_SIZE);
 
 		// add all element to the group
@@ -109,38 +111,45 @@ namespace ui {
 		return info;
 	}
 
-	static void show_handle_txt(group_t* group, elem_t* elem) {
-		group->screen->setCursor(0, elem->id);
+	static void show_handle_txt(u8 line, group_t* group, elem_t* elem) {
+		group->screen->setCursor(0, line);
 		group->screen->print(elem->text);
 	}
 
-	static void show_handle_opt(group_t* group, elem_t* elem) {
-		group->screen->setCursor(0, elem->id);
+	static void show_handle_opt(u8 line, group_t* group, elem_t* elem) {
+		group->screen->setCursor(0, line);
 		
 		if (elem->id == group->select) {
 			// print the selector indicator first
 			group->screen->print(SELECT_INDICATOR);
-			group->screen->setCursor(1, elem->id);
+			group->screen->setCursor(1, line);
 		}
 		group->screen->print(elem->text);
 	}
 
 	void show(group_t* group) {
+		u8 start = 0;
+		u8 line = 0;
+
 		group->screen->clear();
 
-		for (u8 i = 0; i < group->count; i++) {
+		// scrolling
+		if (group->select >= group->rows) {
+			start += (group->select - group->rows) + 1;
+		}
+
+		for (u8 i = start; i < group->count && i < (group->rows + start); i++) {
 			elem_t* elem = group->elems[i];
 
 			switch (elem->type) {
 			case TXT:
-				show_handle_txt(group, elem);
+				show_handle_txt(line, group, elem);
 				break;
 			case OPT:
-				show_handle_opt(group, elem);
-				break;
-			case SEL:
+				show_handle_opt(line, group, elem);
 				break;
 			}
+			line++;
 		}
 	}
 }

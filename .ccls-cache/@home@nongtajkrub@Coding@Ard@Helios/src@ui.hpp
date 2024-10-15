@@ -1,7 +1,6 @@
 /*
- * This is a simplify version of my ctui lib modify
- * to be compatible with embedded system instead of
- * the terminal.
+ * this is a simplify version of my ctui lib modify
+ * to be compatible with embedded system
 */
 
 #pragma once
@@ -16,8 +15,7 @@ typedef LiquidCrystal_I2C I2C;
 namespace ui {
 	typedef enum : u8 {
 		TXT,
-		OPT,
-		SEL
+		OPT
 	} type_t;
 
 	// ui element
@@ -39,8 +37,10 @@ namespace ui {
 		u8 select;
 		// lcd that will be use to show the ui 
 		I2C* screen;
+		u8 rows;
+		u8 cols;
 
-		// head of the element group
+		// elements in element group
 		elem_t** elems;
 	} group_t;
 	
@@ -54,7 +54,7 @@ namespace ui {
 	elem_t* make(const char* text, type_t type);
 	void destroy(elem_t* elem);
 
-	group_t* group(I2C* screen, int count, ...);
+	group_t* group(I2C* screen, u8 rows, u8 cols, int count, ...);
 	void ungroup(group_t* group);
 
 	void selector_up(group_t* group);
