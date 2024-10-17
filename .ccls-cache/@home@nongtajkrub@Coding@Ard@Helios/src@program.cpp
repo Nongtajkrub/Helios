@@ -12,5 +12,11 @@
 #define UI_CONTROL_OPT_ID 2
 
 namespace program {
+	void init() {
 
+	}
+
+	void loop() {
+
+	}
 }

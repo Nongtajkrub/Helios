@@ -6,7 +6,8 @@
 namespace program {
 	typedef enum {
 		MAIN,
-		SETTING
+		SETTING,
+		MODE_SETTING
 	} ui_menu_t;
 
 	struct ui_data {
@@ -35,6 +36,6 @@ namespace program {
 		button::butt_t* sel_button;
 	};
 
-	void init_ui(struct ui_data* ui);
-	void loop_ui(struct ui_data* ui);
+	void ui_init(struct ui_data* ui);
+	void ui_loop(struct ui_data* ui);
 }

@@ -6,6 +6,12 @@
 #define DOWN_BUTT_PIN 14
 #define SEL_BUTT_PIN 27
 
+#define LOOP(MENU)                      \
+	do {                                \
+		menu_loop((MENU).group);        \
+		control_loop(ui, (MENU).group); \
+	} while (0) 
+
 #include "ui_prog.hpp"
 
 namespace program {
@@ -37,7 +43,7 @@ namespace program {
 				);
 	}
 
-	void init_ui(struct ui_data* ui) {
+	void ui_init(struct ui_data* ui) {
 		ui->on_menu = MAIN;
 
 		// init lcd
@@ -54,7 +60,6 @@ namespace program {
 		ui->sel_button = button::make(SEL_BUTT_PIN);
 	}
 
-	/*
 	static void menu_loop(ui::group_t* group) {
 		ui::show(group);
 	}
@@ -74,12 +79,29 @@ namespace program {
 		}
 	}
 
-	static void control_handle_sel(struct ui_data* ui) {
+	static void control_setting_handle_sel(
+			struct ui_data* ui,
+			ui::group_t* group
+			) {
+		switch (ui::selector_on(group).id) {
+		case 0: // setting_txt
+			break;
+		case 1: // mode_opt
+			ui->on_menu = MODE_SETTING;
+			break;
+		}
+	}
+
+	static void control_handle_sel(struct ui_data* ui, ui::group_t* group) {
 		switch (ui->on_menu) {
 		case MAIN:
+			control_main_handle_sel(ui, group);
 			break;
 		case SETTING:
-			// TODO: handle settings menu
+			control_setting_handle_sel(ui, group);
+			break;
+		case MODE_SETTING:
+			// TODO: handle setting mode menu
 			break;
 		}
 	}
@@ -90,19 +112,21 @@ namespace program {
 		} else if (button::state(ui->down_button)) {
 			ui::selector_down(group);
 		} else if (button::state(ui->sel_button)) {
-			//TODO: handle select
+			control_handle_sel(ui, group);
 		}
 	}
 
-	void loop_ui(struct ui_data* ui) {
+	void ui_loop(struct ui_data* ui) {
 		switch (ui->on_menu) {
 		case MAIN:
-			menu_loop(ui->main.group);
+			LOOP(ui->main);
 			break;
 		case SETTING:
-			// TODO: handle settings menu
+			LOOP(ui->setting);
+			break;
+		case MODE_SETTING:
+			// TODO: handle mode setting
 			break;
 		}
 	}
-	*/
 }
