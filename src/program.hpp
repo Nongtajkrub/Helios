@@ -4,9 +4,9 @@
 
 namespace program {
 	struct data {
-		struct ui_data* ui;
+		struct ui_data ui;
 	};
 
-	void init();
-	void loop();
+	void setup(struct data* data);
+	void loop(struct data* data);
 }

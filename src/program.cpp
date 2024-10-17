@@ -12,11 +12,12 @@
 #define UI_CONTROL_OPT_ID 2
 
 namespace program {
-	void init() {
-
+	void setup(struct data* data) {
+		ui_init(&data->ui);
 	}
 
-	void loop() {
-
+	void loop(struct data* data) {
+		ui_loop(&data->ui);
+		delay(LOOP_DELAY);
 	}
 }
