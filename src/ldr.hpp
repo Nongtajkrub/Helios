@@ -9,7 +9,7 @@ namespace ldr {
 	} ldr_t;
 
 	// pointer is bigger than the ldr_t itself but who care
-	ldr_t* make(u8 pin);
+	void make(ldr_t* ldr, u8 pin);
 
 	inline u16 read(ldr_t* ldr) {
 		return analogRead(ldr->pin);

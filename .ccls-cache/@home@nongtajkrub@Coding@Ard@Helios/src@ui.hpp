@@ -51,10 +51,10 @@ namespace ui {
 		const char* text;
 	};
 
-	elem_t* make(const char* text, type_t type);
+	void make(elem_t* elem, const char* text, type_t type);
 	void destroy(elem_t* elem);
 
-	group_t* group(I2C* screen, u8 rows, u8 cols, int count, ...);
+	void group(group_t* group, I2C* screen, u8 rows, u8 cols, int count, ...);
 	void ungroup(group_t* group);
 
 	void selector_up(group_t* group);

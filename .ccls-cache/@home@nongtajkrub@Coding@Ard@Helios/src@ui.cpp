@@ -7,10 +7,9 @@ namespace ui {
 	static constexpr u16 GROUP_SIZE    = sizeof(group_t);
 	static constexpr u16 ELEM_PTR_SIZE = sizeof(elem_t*);
 
-	elem_t* make(const char* text, type_t type) {
+	void make(elem_t* elem, const char* text, type_t type) {
 		const u16 TEXT_SIZE = strlen(text) + 1;
-		elem_t* elem = (elem_t*)malloc(ELEM_SIZE);
-		
+
 		elem->type = type;
 
 		// id will be assing when put in group
@@ -19,8 +18,6 @@ namespace ui {
 		elem->text = (char*)malloc(TEXT_SIZE);
 		memset(elem->text, '\0', TEXT_SIZE);
 		memcpy(elem->text, text, TEXT_SIZE);
-
-		return elem;
 	}
 
 	// this is only for freeing element memories
@@ -32,12 +29,10 @@ namespace ui {
 		if (elem->text != NULL) {
 			free(elem->text);
 		}
-		free(elem);
 	}
 
 	// use int for count to prevent argument promotion
-	group_t* group(I2C* screen, u8 rows, u8 cols, int count, ...) {
-		group_t* group = (group_t*)malloc(GROUP_SIZE);
+	void group(group_t* group, I2C* screen, u8 rows, u8 cols, int count, ...) {
 		va_list elems;
 		va_start(elems, count);
 
@@ -60,8 +55,6 @@ namespace ui {
 		if (group->elems[0]->type != OPT) {
 			selector_down(group);
 		}
-
-		return group;
 	}
 
 	void ungroup(group_t* group) {

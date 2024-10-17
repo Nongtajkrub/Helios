@@ -1,20 +1,15 @@
 #include "neopixel.hpp"
 
 namespace np {
-	pixel_t* make(u8 pin, u16 count) {
-		pixel_t* pixel = (pixel_t*)malloc(sizeof(pixel_t));
-
+	void make(pixel_t* pixel, u8 pin, u16 count) {
 		pixel->neopixel = Neopixel(count, pin);
 		pixel->neopixel.begin();
 
 		pixel->count = count;
-
-		return pixel;
 	}
 
 	void destroy(pixel_t* pixel) {
 		pixel->neopixel.clear();
-		free(pixel);
 	}
 	
 	void brightness(pixel_t* pixel, u8 brightness) {

@@ -1,3 +1,5 @@
+#include "ui_prog.hpp"
+
 #define LCD_ADDR 0x27
 #define LCD_COLS 20
 #define LCD_ROWS 4
@@ -8,39 +10,39 @@
 
 #define LOOP(MENU)                      \
 	do {                                \
-		menu_loop((MENU).group);        \
-		control_loop(ui, (MENU).group); \
+		menu_loop(&(MENU).group);        \
+		control_loop(ui, &(MENU).group); \
 	} while (0) 
-
-#include "ui_prog.hpp"
 
 namespace program {
 	static void init_main_menu(struct ui_data* ui) {
-		ui->main.welcom_txt = ui::make("Welcome!", ui::TXT);
-		ui->main.setting_opt = ui::make("Settings", ui::OPT);
-		ui->main.control_opt = ui::make("Controls", ui::OPT);
-		ui->main.group = ui::group(
-				ui->lcd,
-				LCD_ROWS,
-				LCD_COLS,
-				3,
-				ui->main.welcom_txt,
-				ui->main.setting_opt,
-				ui->main.control_opt
-				);
+		ui::make(&ui->main.welcom_txt, "Welcome!", ui::TXT);
+		ui::make(&ui->main.setting_opt, "Settings", ui::OPT);
+		ui::make(&ui->main.control_opt, "Controls", ui::OPT);
+		ui::group(
+			&ui->main.group,
+			ui->lcd,
+			LCD_ROWS,
+			LCD_COLS,
+			3,
+			ui->main.welcom_txt,
+			ui->main.setting_opt,
+			ui->main.control_opt
+			);
 	}
 
 	static void init_setting_menu(struct ui_data* ui) {
-		ui->setting.setting_txt = ui::make("Settings", ui::TXT);
-		ui->setting.mode_opt = ui::make("mode", ui::OPT);
-		ui->setting.group = ui::group(
-				ui->lcd,
-				LCD_ROWS,
-				LCD_COLS,
-				2,
-				ui->setting.setting_txt,
-				ui->setting.mode_opt
-				);
+		ui::make(&ui->setting.setting_txt, "Settings", ui::TXT);
+		ui::make(&ui->setting.mode_opt, "mode", ui::OPT);
+		ui::group(
+			&ui->setting.group, 
+			ui->lcd,
+			LCD_ROWS,
+			LCD_COLS,
+			2,
+			ui->setting.setting_txt,
+			ui->setting.mode_opt
+			);
 	}
 
 	void ui_init(struct ui_data* ui) {
@@ -55,9 +57,9 @@ namespace program {
 		init_setting_menu(ui);
 
 		// init buttons
-		ui->up_button = button::make(UP_BUTT_PIN);
-		ui->down_button = button::make(DOWN_BUTT_PIN);
-		ui->sel_button = button::make(SEL_BUTT_PIN);
+		button::make(&ui->up_button, UP_BUTT_PIN);
+		button::make(&ui->down_button, DOWN_BUTT_PIN);
+		button::make(&ui->sel_button, SEL_BUTT_PIN);
 	}
 
 	static void menu_loop(ui::group_t* group) {
@@ -65,9 +67,9 @@ namespace program {
 	}
 
 	static void control_main_handle_sel(
-			struct ui_data* ui,
-			ui::group_t* group
-			) {
+		struct ui_data* ui,
+		ui::group_t* group
+		) {
 		switch (ui::selector_on(group).id) {
 		case 0: // welcom_txt
 			break;
@@ -80,9 +82,9 @@ namespace program {
 	}
 
 	static void control_setting_handle_sel(
-			struct ui_data* ui,
-			ui::group_t* group
-			) {
+		struct ui_data* ui,
+		ui::group_t* group
+		) {
 		switch (ui::selector_on(group).id) {
 		case 0: // setting_txt
 			break;
@@ -107,11 +109,11 @@ namespace program {
 	}
 
 	static void control_loop(struct ui_data* ui, ui::group_t* group) {
-		if (button::state(ui->up_button)) {
+		if (button::state(&ui->up_button)) {
 			ui::selector_up(group);
-		} else if (button::state(ui->down_button)) {
+		} else if (button::state(&ui->down_button)) {
 			ui::selector_down(group);
-		} else if (button::state(ui->sel_button)) {
+		} else if (button::state(&ui->sel_button)) {
 			control_handle_sel(ui, group);
 		}
 	}

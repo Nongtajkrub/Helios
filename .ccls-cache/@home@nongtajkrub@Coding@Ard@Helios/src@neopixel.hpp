@@ -13,7 +13,7 @@ namespace np {
 		u16 count;
 	} pixel_t;
 
-	pixel_t* make(u8 pin, u16 count);
+	void make(pixel_t* pixel, u8 pin, u16 count);
 	void destroy(pixel_t* pixel);
 
 	void brightness(pixel_t* pixel, u8 brightness);

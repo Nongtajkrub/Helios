@@ -2,19 +2,15 @@
 #include <Arduino.h>
 
 namespace button {
-	butt_t* make(u8 pin) {
-		butt_t* butt = (butt_t*)malloc(sizeof(butt_t));
-
+	void make(butt_t* butt, u8 pin) {
 		butt->pin = pin;
 		butt->old_state = false;
 
 		pinMode(pin, INPUT);
-
-		return butt;
 	}
 	
 	void destroy(butt_t* butt) {
-		free(butt);
+		pinMode(butt->pin, OUTPUT);
 	}
 
 	bool state(butt_t* butt) {

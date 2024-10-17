@@ -9,7 +9,7 @@ namespace button {
 		bool old_state;
 	} butt_t;
 
-	butt_t* make(u8 pin);
+	void make(butt_t* butt, u8 pin);
 	void destroy(butt_t* butt);
 
 	bool state(butt_t* butt); 
