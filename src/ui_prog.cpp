@@ -8,8 +8,22 @@
 #define DOWN_BUTT_PIN 14
 #define SEL_BUTT_PIN 27
 
-#define LOOP(MENU)                      \
-	do {                                \
+/*
+#define MENU_GROUP(MENU, COUNT, ...) \
+	do {                             \
+		ui::group(                   \
+			&(MENU).group,           \
+			ui->lcd,                 \
+			LCD_ROWS,                \
+			LCD_COLS,                \
+			(COUNT),                 \
+			__VA_ARGS__              \
+			);                       \
+	} while (0)
+*/
+
+#define MENU_LOOP(MENU)                  \
+	do {                                 \
 		menu_loop(&(MENU).group);        \
 		control_loop(ui, &(MENU).group); \
 	} while (0) 
@@ -18,16 +32,15 @@ namespace program {
 	static void init_main_menu(struct ui_data* ui) {
 		ui::make(&ui->main.welcom_txt, "Welcome!", ui::TXT);
 		ui::make(&ui->main.setting_opt, "Settings", ui::OPT);
-		ui::make(&ui->main.control_opt, "Controls", ui::OPT);
+		//MENU_GROUP(ui->main, 2, ui->main.welcom_txt, ui->main.setting_opt);
 		ui::group(
 			&ui->main.group,
 			ui->lcd,
 			LCD_ROWS,
 			LCD_COLS,
-			3,
+			2,
 			ui->main.welcom_txt,
-			ui->main.setting_opt,
-			ui->main.control_opt
+			ui->main.setting_opt
 			);
 	}
 
@@ -43,6 +56,10 @@ namespace program {
 			ui->setting.setting_txt,
 			ui->setting.mode_opt
 			);
+	}
+
+	static void init_setting_mode_menu(struct ui_data* ui) {
+		
 	}
 
 	void ui_init(struct ui_data* ui) {
@@ -121,13 +138,14 @@ namespace program {
 	void ui_loop(struct ui_data* ui) {
 		switch (ui->on_menu) {
 		case MAIN:
-			LOOP(ui->main);
+			MENU_LOOP(ui->main);
 			break;
 		case SETTING:
-			LOOP(ui->setting);
+			MENU_LOOP(ui->setting);
 			break;
 		case MODE_SETTING:
-			// TODO: handle mode setting
+			// TODO: add mode settings
+			//MENU_LOOP(ui->setting_mode);
 			break;
 		}
 	}
