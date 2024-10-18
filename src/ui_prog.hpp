@@ -19,7 +19,7 @@ namespace program {
 	struct ui_data {
 		ui_menu_t on_menu;
 		// ui request
-		stack_t req;
+		cstack_t req;
 		I2C* lcd;
 
 		// main menu element
@@ -34,19 +34,19 @@ namespace program {
 		struct {
 			ui::elem_t setting_txt;
 			ui::elem_t mode_opt;
+			ui::elem_t back_opt;
 
 			ui::group_t group;
 		} setting;
 
-		/*
 		struct {
 			ui::elem_t mode_txt;
 			ui::elem_t auto_opt;
 			ui::elem_t manu_opt;
+			ui::elem_t back_opt;
 			
 			ui::group_t group;
 		} setting_mode;
-		*/
 
 		button::butt_t up_button;
 		button::butt_t down_button;

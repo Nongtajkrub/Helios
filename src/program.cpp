@@ -7,10 +7,6 @@
 
 #define LOOP_DELAY 50
 
-#define UI_WELCOM_TXT_ID 0
-#define UI_SETTING_OPT_ID 1
-#define UI_CONTROL_OPT_ID 2
-
 namespace program {
 	void setup(struct data* data) {
 		ui_init(&data->ui);

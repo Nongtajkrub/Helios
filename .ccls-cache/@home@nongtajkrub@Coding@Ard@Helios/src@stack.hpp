@@ -13,12 +13,12 @@ typedef struct {
 
 	u16 item_size;
 	void** item;
-} cstack_t;
+} stack_t;
 
-void stack_make(cstack_t* stack, u16 item_size);
-void stack_destroy(cstack_t* stack);
+void stack_make(stack_t* stack, u16 item_size);
+void stack_destroy(stack_t* stack);
 
-void stack_push(cstack_t* stack, void* push);
-void* stack_pop(cstack_t* stack);
+void stack_push(stack_t* stack, void* push);
+void* stack_pop(stack_t* stack);
 
-u16 stack_size(const cstack_t* stack);
+u16 stack_size(const stack_t* stack);

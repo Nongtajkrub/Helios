@@ -1,10 +1,10 @@
-#define SELECT_INDICATOR '>'
-
 #include "ui.hpp"
 
+#define SELECT_INDICATOR '>'
+
 namespace ui {
-	static constexpr u16 ELEM_SIZE     = sizeof(elem_t);
-	static constexpr u16 GROUP_SIZE    = sizeof(group_t);
+	static constexpr u16 ELEM_SIZE = sizeof(elem_t);
+	static constexpr u16 GROUP_SIZE = sizeof(group_t);
 	static constexpr u16 ELEM_PTR_SIZE = sizeof(elem_t*);
 
 	void make(elem_t* elem, const char* text, type_t type) {
@@ -36,12 +36,12 @@ namespace ui {
 		va_list elems;
 		va_start(elems, count);
 
-		group->count  = count;
+		group->count = count;
 		group->select = 0;
 		group->screen = screen;
-		group->rows   = rows;
-		group->cols   = cols;
-		group->elems  = (elem_t**)calloc(count, ELEM_PTR_SIZE);
+		group->rows = rows;
+		group->cols = cols;
+		group->elems = (elem_t**)calloc(count, ELEM_PTR_SIZE);
 
 		// add all element to the group
 		for (u8 i = 0; i < count; i++) {
