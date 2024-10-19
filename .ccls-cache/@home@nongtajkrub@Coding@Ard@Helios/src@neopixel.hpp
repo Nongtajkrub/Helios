@@ -7,7 +7,7 @@ typedef Adafruit_NeoPixel Neopixel;
 
 namespace np {
 	typedef struct {
-		Neopixel neopixel;
+		Neopixel* neopixel;
 
 		u8 pin;
 		u16 count;

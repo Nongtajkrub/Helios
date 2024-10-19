@@ -1,14 +1,7 @@
 #include "ui_prog.hpp"
 
-#define LCD_ADDR 0x27
-#define LCD_COLS 20
-#define LCD_ROWS 4
-
-#define UP_BUTT_PIN 12
-#define DOWN_BUTT_PIN 14
-#define SEL_BUTT_PIN 27
-
-#define BACK_UI_CHAR "<"
+#define GET_UI_SETTINGS 
+#include "settings.hpp"
 
 #define MENU_GROUP(MENU, COUNT, ...) \
 	do {                             \
@@ -68,6 +61,12 @@ namespace program {
 			);
 	}
 
+	static void init_button(struct ui_data* ui) {
+		button::make(&ui->up_button, UP_BUTT_PIN);
+		button::make(&ui->down_button, DOWN_BUTT_PIN);
+		button::make(&ui->sel_button, SEL_BUTT_PIN);
+	}
+
 	void ui_init(struct ui_data* ui) {
 		ui->on_menu = MAIN;
 		stack_make(&ui->req, sizeof(ui_request_t));
@@ -76,19 +75,19 @@ namespace program {
 		ui->lcd = new I2C(LCD_ADDR, LCD_COLS, LCD_ROWS);
 		ui->lcd->init();
 
-		// init menus
 		init_main_menu(ui);
 		init_setting_menu(ui);
 		init_setting_mode_menu(ui);
 
-		// init buttons
-		button::make(&ui->up_button, UP_BUTT_PIN);
-		button::make(&ui->down_button, DOWN_BUTT_PIN);
-		button::make(&ui->sel_button, SEL_BUTT_PIN);
+		init_button(ui);
 	}
 
-	static void menu_loop(ui::group_t* group) {
+	static inline void menu_loop(ui::group_t* group) {
 		ui::show(group);
+	}
+
+	static inline void ui_request(struct ui_data* ui, ui_request_t req) {
+		stack_push(&ui->req, (void*)&req);
 	}
 
 	static void control_main_handle_sel(
@@ -128,12 +127,12 @@ namespace program {
 		case 0: // mode_txt
 			break;
 		case 1: // auto_opt
-			// TODO: request change setting
+			ui_request(ui, SETTING_MODE_AUTO);
 			break;
 		case 2: // manu_opt
-			// TODO: request change setting
+			ui_request(ui, SETTING_MODE_MANU);
 			break;
-		case 3:
+		case 3: // back_opt
 			ui->on_menu = SETTING;
 			break;
 		}
