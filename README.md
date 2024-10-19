@@ -4,4 +4,5 @@ Helios is a name for the smart light system that I am developing for my STEAM Ro
 
 ## TODO
 
-...
+* Implement turning on and off light in manual mode
+* Implement idependent lighting system base of brightness in the area
