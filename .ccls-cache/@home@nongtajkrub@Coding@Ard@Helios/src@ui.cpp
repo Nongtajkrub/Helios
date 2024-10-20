@@ -91,7 +91,7 @@ namespace ui {
 			}
 		}
 	}
-	
+
 	struct selector_in selector_on(group_t* group) {
 		elem_t* elem = group->elems[group->select];
 

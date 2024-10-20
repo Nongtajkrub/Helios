@@ -43,7 +43,7 @@ namespace ui {
 		// elements in element group
 		elem_t** elems;
 	} group_t;
-	
+
 	struct selector_in {
 		u8 id;
 
