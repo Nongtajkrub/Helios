@@ -1,3 +1,8 @@
+/*
+ * This UI system is design so bad I think a horse was shove up my ass 
+ * while I was writing it. If this is still here I forgot to delete it.
+*/
+
 #include "ui_prog.hpp"
 
 #define GET_UI_SETTINGS 
