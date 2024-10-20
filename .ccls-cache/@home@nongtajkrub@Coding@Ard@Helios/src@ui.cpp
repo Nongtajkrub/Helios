@@ -104,6 +104,33 @@ namespace ui {
 		return info;
 	}
 
+	void show(const char* text, I2C* screen, u8 x, u8 y, u8 wrap_at) {
+		const u8 text_size = strlen(text);
+
+		screen->clear();
+
+		// print without wraping
+		if (wrap_at == NO_WRAP) {
+			screen->print(text);
+			return;
+		}
+
+		// print with wraping
+		u8 current_y = 0;
+		u8 current_x = 0;
+		for (u8 i = x; i < text_size; i++) {
+			if (current_x >= wrap_at) {
+				current_x = 0;
+				current_y++;
+			}
+
+			screen->setCursor(current_x, current_y);
+			screen->print(text[i]);
+
+			current_x++;
+		}
+	}
+
 	static void show_handle_txt(u8 line, group_t* group, elem_t* elem) {
 		group->screen->setCursor(0, line);
 		group->screen->print(elem->text);

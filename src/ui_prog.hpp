@@ -5,7 +5,7 @@
 #include "stack.h"
 
 namespace program {
-	typedef enum {
+	typedef enum : u8 {
 		MAIN,
 		SETTING,
 		MODE_SETTING,
@@ -13,27 +13,12 @@ namespace program {
 		TOGGLE_QUICK_ACT
 	} ui_menu_t;
 
-	// all requests ui can send to light controller
-	typedef enum {
-		SETTING_MODE_MANU,
-		SETTING_MODE_AUTO,
-		IS_MANU_ON
-	} ui_req_t;
-
-	// all respond ui can recv from light controller
-	typedef enum {
-		MANU_ON,
-		MANU_OFF
-	} ui_res_t;
-
 	struct ui_data {
 		ui_menu_t on_menu;
 		I2C* lcd;
 
-		// a stack containing UI requests to the light controller
-		cstack_t req;
-		// a stack containing response send to UI from light controller
-		cstack_t res;
+		// use for communicating with light
+		struct light_data* light;
 
 		struct {
 			ui::elem_t header_txt;
@@ -74,9 +59,6 @@ namespace program {
 			ui::elem_t off_opt;
 			ui::elem_t back_opt;
 
-			ui::elem_t notmanu_txt;
-			ui::elem_t error_txt;
-
 			ui::group_t group;
 		} quickact_toggle;
 
@@ -85,6 +67,6 @@ namespace program {
 		button::butt_t sel_button;
 	};
 
-	void ui_init(struct ui_data* ui);
+	void ui_init(struct ui_data* ui, struct light_data* light);
 	void ui_loop(struct ui_data* ui);
 }

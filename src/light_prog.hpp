@@ -27,4 +27,18 @@ namespace program {
 
 	void light_init(struct light_data* light);
 	void light_loop(struct light_data* light, struct ui_data* ui);
+
+	/* use for communicating with UI */
+
+	inline void light_set_mode_manu(struct light_data* light, bool val) {
+		light->settings.mode.manual = val;
+	}
+
+	inline void light_set_on(struct light_data* light, bool val) {
+		light->settings.mode.on = val;
+	}
+
+	inline bool light_is_manu(struct light_data* light) {
+		return light->settings.mode.manual;
+	}
 }

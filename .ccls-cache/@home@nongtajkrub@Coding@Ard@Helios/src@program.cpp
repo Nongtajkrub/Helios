@@ -4,7 +4,7 @@
 
 namespace program {
 	void setup(struct data* data) {
-		ui_init(&data->ui);
+		ui_init(&data->ui, &data->light);
 		light_init(&data->light);
 	}
 

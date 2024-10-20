@@ -4,6 +4,7 @@
 */
 
 #include "ui_prog.hpp"
+#include "light_prog.hpp"
 
 #define GET_UI_SETTINGS 
 #include "settings.hpp"
@@ -25,6 +26,8 @@
 		ui::show(&(MENU).group);         \
 		control_loop(ui, &(MENU).group); \
 	} while (0) 
+
+#define NOT_MANU_ERR_MSG "Enter manual mode first"
 
 namespace program {
 	static void init_main_menu(struct ui_data* ui) {
@@ -102,15 +105,14 @@ namespace program {
 		button::make(&ui->sel_button, SEL_BUTT_PIN);
 	}
 
-	void ui_init(struct ui_data* ui) {
+	void ui_init(struct ui_data* ui, struct light_data* light) {
 		ui->on_menu = MAIN;
-
-		stack_make(&ui->req, sizeof(ui_req_t));
-		stack_make(&ui->res, sizeof(ui_res_t));
 
 		// init lcd
 		ui->lcd = new I2C(LCD_ADDR, LCD_COLS, LCD_ROWS);
 		ui->lcd->init();
+
+		ui->light = light;
 
 		init_main_menu(ui);
 		init_setting_menu(ui);
@@ -121,41 +123,17 @@ namespace program {
 		init_button(ui);
 	}
 
-	static inline void ui_request(struct ui_data* ui, ui_req_t req) {
-		stack_push(&ui->req, (void*)&req);
-	}
-
-	static inline ui_res_t ui_get_respond(struct ui_data* ui) {
-		return *(ui_res_t*)stack_pop(&ui->res);
-	}
-
 	// menu only work in manual mode
 	static void qucikact_menu_loop(struct ui_data* ui) {
-		ui_request(ui, IS_MANU_ON);
-
-		// wait for respnd
-		delay(50);
-		
-		// check for respond
-		if (ui->res.size == 0) {
-			// TODO: handle no respond 
+		if (!light_is_manu(ui->light)) {
+			ui::show(NOT_MANU_ERR_MSG, ui->lcd, 0, 0, LCD_COLS);
+			
+			delay(3000);
+			ui->on_menu = MAIN;
 			return;
 		}
 
-		// handle respond
-		ui_res_t res = ui_get_respond(ui);
-
-		switch (ui_get_respond(ui)) {
-		case MANU_ON:
-			// TODO: handle MANU_ON
-			break;
-		case MANU_OFF:
-			// TODO: handle MANU_OFF
-			break;
-		default:
-			// TODO: handle wrong respond	
-			break;
-		}
+		// TODO: implement the rest menu loop
 	}
 
 	static void control_main_handle_sel(
@@ -198,10 +176,10 @@ namespace program {
 		case 0: // header_txt
 			break;
 		case 1: // auto_opt
-			ui_request(ui, SETTING_MODE_AUTO);
+			light_set_mode_manu(ui->light, false);
 			break;
 		case 2: // manu_opt
-			ui_request(ui, SETTING_MODE_MANU);
+			light_set_mode_manu(ui->light, true);
 			break;
 		case 3: // back_opt
 			ui->on_menu = SETTING;
@@ -288,7 +266,7 @@ namespace program {
 			qucikact_menu_loop(ui);
 			break;
 		case TOGGLE_QUICK_ACT:
-			// TODO: handle TOGGLE_QUICK_ACT
+			DEF_MENU_LOOP(ui->quickact_toggle);
 			break;
 		}
 	}

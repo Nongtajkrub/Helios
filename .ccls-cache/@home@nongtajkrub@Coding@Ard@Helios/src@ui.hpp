@@ -10,6 +10,8 @@
 #include <util/type.hpp>
 #include <LiquidCrystal_I2C/LiquidCrystal_I2C.h>
 
+#define NO_WRAP 0
+
 typedef LiquidCrystal_I2C I2C;
 
 namespace ui {
@@ -61,5 +63,8 @@ namespace ui {
 	void selector_down(group_t* group);
 	struct selector_in selector_on(group_t* group);
 
+	// show plain txt with wraping
+	void show(const char* text, I2C* screen, u8 x, u8 y, u8 wrap_at);
+	// show group of element does not support wraping yet
 	void show(group_t* group);
 }

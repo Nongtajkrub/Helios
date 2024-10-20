@@ -49,7 +49,10 @@ namespace program {
 		return ret_val;
 	}
 
-	static void set_all_brightness(struct light_data* light, u8 brightness) {
+	static inline void set_all_brightness(
+		struct light_data* light,
+		u8 brightness
+		) {
 		np::brightness(&light->pixel1, brightness);
 	}
 
@@ -67,33 +70,7 @@ namespace program {
 		np::brightness(&light->pixel1, brightness.pixel1);
 	}
 
-	static inline ui_request_t get_ui_request(struct ui_data* ui) {
-		return *(ui_request_t*)stack_pop(&ui->req);
-	}
-
-	static void handle_ui_request(
-		struct light_data* light,
-		struct ui_data* ui
-		) {
-		// check for request
-		if (ui->req.size == 0) {
-			return;
-		}
-
-		switch (get_ui_request(ui)) {
-		case SETTING_MODE_AUTO:
-			light->settings.mode.manual = false;
-			break;
-		case SETTING_MODE_MANU:
-			light->settings.mode.manual = true;
-			break;
-		default:
-			break;
-		}
-	}
-
 	void light_loop(struct light_data* light, struct ui_data* ui) {
-		handle_ui_request(light, ui);
 		if (light->settings.mode.manual) {
 			manual_mode_loop(light);
 		} else {
