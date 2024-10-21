@@ -123,19 +123,6 @@ namespace program {
 		init_button(ui);
 	}
 
-	// menu only work in manual mode
-	static void qucikact_menu_loop(struct ui_data* ui) {
-		if (!light_is_manu(ui->light)) {
-			ui::show(NOT_MANU_ERR_MSG, ui->lcd, 0, 0, LCD_COLS);
-			
-			delay(3000);
-			ui->on_menu = MAIN;
-			return;
-		}
-
-		// TODO: implement the rest menu loop
-	}
-
 	static void control_main_handle_sel(
 		struct ui_data* ui,
 		ui::group_t* group
@@ -211,10 +198,10 @@ namespace program {
 		case 0: // header_txt
 			break;
 		case 1: // on_opt
-			// TODO: handle on action
+			light_set_on(ui->light, true);
 			break;
 		case 2: // off_opt
-			// TODO: handle off action
+			light_set_on(ui->light, false);
 			break;
 		case 3: // back_opt
 			ui->on_menu = QUICK_ACT;
@@ -249,6 +236,22 @@ namespace program {
 		} else if (button::state(&ui->sel_button)) {
 			control_handle_sel(ui, group);
 		}
+	}
+
+	// quickact toggle menu only work in manual mode
+	static void qucikact_menu_loop(struct ui_data* ui) {
+		// show error and go back to main menu if not in manual mode
+		if (!light_is_manu(ui->light)) {
+			ui::show(NOT_MANU_ERR_MSG, ui->lcd, 0, 0, LCD_COLS);
+			
+			delay(3000);
+			ui->on_menu = MAIN;
+			return;
+		}
+
+		// show menu if in manual mode
+		ui::show(&ui->quickact.group);
+		control_loop(ui, &ui->quickact.group);
 	}
 
 	void ui_loop(struct ui_data* ui) {

@@ -20,8 +20,8 @@
 	#define NP_PIN 26
 	#define NP_COUNT 1
 	#define DEF_NP_R 255
-	#define DEF_NP_G 255
-	#define DEF_NP_B 255
+	#define DEF_NP_G 0 
+	#define DEF_NP_B 0 
 
 	// BNF - BRIGHTNESS_NORMALIZATION_FACTOR
 	#define CALULATE_BNF(MAX_ADC) ((float)(MAX_ADC) / 100.0f)

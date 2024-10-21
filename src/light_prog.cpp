@@ -4,6 +4,7 @@
 #define GET_LIGHT_SETTINGS
 #include "settings.hpp"
 
+#include <util/func.h>
 #include <Arduino.h>
 
 namespace program {
@@ -25,7 +26,7 @@ namespace program {
 		};
 
 		light->settings.mode = {
-			.manual = false,
+			.manual = true,
 			.on = true 
 		};
 	}
@@ -41,9 +42,9 @@ namespace program {
 	};
 
 	static struct brightness calculate_brightness(struct light_data* light) {
-		// map ldr values to 0 - 100
+		// map ldr values to 1 - 100 brightness cant be 0
 		struct brightness ret_val = {
-			.pixel1 = (u8)round((f32)ldr::read(&light->ldr1) / BNF)
+			.pixel1 = min(1, (u8)round((f32)ldr::read(&light->ldr1) / BNF))
 		};
 
 		return ret_val;
@@ -53,6 +54,9 @@ namespace program {
 		struct light_data* light,
 		u8 brightness
 		) {
+		// if brightness is turn down to 0 neopixel wont turn back on
+		brightness = min(1, brightness);
+
 		np::brightness(&light->pixel1, brightness);
 	}
 
