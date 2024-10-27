@@ -2,14 +2,16 @@
 
 #include "electronics.hpp"
 
+#define GET_GLOBAL_SETTINGS
+#include "settings.hpp"
+
 namespace program {
 	struct light_data {
-		ldr::ldr_t ldr1;
-		// TODO: Add ldr2 and ldr3 when ready
-		//ldr::ldr_t ldr2;
-		//ldr::ldr_t ldr3;
+		ldr::ldr_t ldrs[LDR_COUNT];
+		u16 max_reading;
+		u16 min_reading;
 
-		np::pixel_t pixel1;
+		np::pixel_t pixels[NP_COUNT];
 
 		struct {
 			struct {
@@ -26,7 +28,7 @@ namespace program {
 	};
 
 	void light_init(struct light_data* light);
-	void light_loop(struct light_data* light, struct ui_data* ui);
+	void light_loop(struct light_data* light);
 
 	/* use for communicating with UI */
 

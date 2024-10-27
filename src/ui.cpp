@@ -39,6 +39,7 @@ namespace ui {
 		group->count = count;
 		group->select = 0;
 		group->screen = screen;
+		screen->backlight();
 		group->rows = rows;
 		group->cols = cols;
 		group->elems = (elem_t**)calloc(count, ELEM_PTR_SIZE);

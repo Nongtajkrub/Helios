@@ -7,7 +7,7 @@
 
 #include <Arduino.h>
 
-#include <util/type.hpp>
+#include "type.hpp"
 #include <LiquidCrystal_I2C/LiquidCrystal_I2C.h>
 
 #define NO_WRAP 0

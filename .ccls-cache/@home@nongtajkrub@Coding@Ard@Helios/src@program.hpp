@@ -3,6 +3,8 @@
 #include "ui_prog.hpp"
 #include "light_prog.hpp"
 
+#include <Arduino.h>
+
 namespace program {
 	struct data {
 		struct ui_data ui;

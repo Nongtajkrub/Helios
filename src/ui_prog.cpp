@@ -243,8 +243,9 @@ namespace program {
 		// show error and go back to main menu if not in manual mode
 		if (!light_is_manu(ui->light)) {
 			ui::show(NOT_MANU_ERR_MSG, ui->lcd, 0, 0, LCD_COLS);
-			
-			delay(3000);
+
+			// delay 3 seconds
+			vTaskDelay(3000 / portTICK_PERIOD_MS);
 			ui->on_menu = MAIN;
 			return;
 		}

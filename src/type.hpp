@@ -1,4 +1,4 @@
-#include <cstdint>
+#include <Arduino.h>
 
 #define PTR_SIZE sizeof(void*)
 

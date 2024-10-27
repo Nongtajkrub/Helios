@@ -2,7 +2,6 @@
 
 #include "ui.hpp"
 #include "button.hpp"
-#include "stack.h"
 
 namespace program {
 	typedef enum : u8 {
