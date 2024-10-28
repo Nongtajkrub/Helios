@@ -9,22 +9,22 @@
 #define GET_UI_SETTINGS 
 #include "settings.hpp"
 
-#define MENU_GROUP(MENU, COUNT, ...) \
-	do {                             \
-		ui::group(                   \
-			&(MENU).group,           \
-			ui->lcd,                 \
-			LCD_ROWS,                \
-			LCD_COLS,                \
-			(COUNT),                 \
-			__VA_ARGS__              \
-			);                       \
+#define MENU_GROUP(MENU, COUNT, ...)                                          \
+	do {                                                                      \
+		ui::group(                                                            \
+			&(MENU).group,                                                    \
+			ui->lcd,                                                          \
+			LCD_ROWS,                                                         \
+			LCD_COLS,                                                         \
+			(COUNT),                                                          \
+			__VA_ARGS__                                                       \
+			);                                                                \
 	} while (0)
 
-#define DEF_MENU_LOOP(MENU)              \
-	do {                                 \
-		ui::show(&(MENU).group);         \
-		control_loop(ui, &(MENU).group); \
+#define DEF_MENU_LOOP(MENU)                                                   \
+	do {                                                                      \
+		ui::show(&(MENU).group);                                              \
+		control_loop(ui, &(MENU).group);                                      \
 	} while (0) 
 
 #define NOT_MANU_ERR_MSG "Enter manual mode first"

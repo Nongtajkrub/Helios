@@ -80,46 +80,57 @@ namespace program {
 				);
 	}
 
-	// src_ldr_i is the index of the ldr that is not a neighbors 
-	static u16 propagate_ldr_reading(struct light_data* light, u8 src_ldr_i) {
-		u16 result = light->ldrs[src_ldr_i].read_cache;
-
+	// normalize all reading to be between 0 - 100
+	static void norm_readings(struct light_data* light) {	
 		for (u8 i = 0; i < LDR_COUNT; i++) {
-			if (i == src_ldr_i) {
-				continue;
-			}
+			ldr::set_cache(
+				&light->ldrs[i],
+				(u8)round((f32)ldr::get_cache(&light->ldrs[i]) / (f32)RNF)
+				);
+		}
+	}
 
-			// calculate weight
-			f32 w = (f32)cal_np_distance(src_ldr_i, i) * (f32)RPWM;
+	// src_ldr_i is the index of the ldr that is not a neighbors 
+	static void propagate_readings(struct light_data* light) {
+		for (u8 src = 0; src < LDR_COUNT; src++) {
+			u8 result = ldr::get_cache(&light->ldrs[src]);
 
 			// propagate reading
-			result += (u16)round((f32)w * (f32)light->ldrs[i].read_cache);
+			for (u8 nbr = 0; nbr < LDR_COUNT; nbr++) {
+				// skip the current src
+				if (nbr == src) {
+					continue;
+				}
+
+				// compute weight
+				f32 w = (f32)cal_np_distance(src, nbr) * (f32)RPWM;
+
+				// compute result
+				result += (u8)round(w * (f32)ldr::get_cache(&light->ldrs[nbr]));
+			}
+
+			ldr::set_cache(&light->ldrs[src], result);
 		}
-
-		return result;
 	}
 
-	// normalize reading between 0 - 100
-	static u8 norm_reading() {
-		// TODO: implement normalization
-		return 0;
-	}
-
-	static inline u8 cal_brightness(struct light_data* light, u8 src_ldr_i) {
-		return norm(1, 100, propagate_ldr_reading(light, src_ldr_i));
+	// turn pure AO from LDR to brightness for each neopixel ranging between
+	// 0 - 100 calculation result get store in ldr cache
+	static inline void cal_brightness(struct light_data* light) {
+		cache_ldr_reading(light);
+		norm_readings(light);
+		propagate_readings(light);
 	}
 
 	// inline because I want this to be very fast
 	static inline void auto_mode_loop(struct light_data* light) {
-		cache_ldr_reading(light);
+		// calculate brightness and store them in the ldrs cache
+		cal_brightness(light);
 
-		// calculate all np brightness and set them
-		for (u8 i = 0; i < LDR_COUNT; i++) {
-			u8 norm_val = cal_brightness(light, i);
-			Serial.print(i);
-			Serial.print(" brightness: ");
-			Serial.println(norm_val);
-			np::brightness(&light->pixels[i], norm_val);
+		for (u8 i = 0; i < NP_COUNT; i++) {
+			//Serial.print(i);
+			//Serial.print(" brightness: ");
+			//Serial.println(ldr::get_cache(&light->ldrs[i]));
+			np::brightness(&light->pixels[i], ldr::get_cache(&light->ldrs[i]));
 		}
 	}
 

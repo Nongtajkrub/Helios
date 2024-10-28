@@ -8,9 +8,6 @@
 namespace program {
 	struct light_data {
 		ldr::ldr_t ldrs[LDR_COUNT];
-		u16 max_reading;
-		u16 min_reading;
-
 		np::pixel_t pixels[NP_COUNT];
 
 		struct {
