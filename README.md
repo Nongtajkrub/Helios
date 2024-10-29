@@ -4,6 +4,7 @@ Helios is a name for the smart light system that I am developing for my STEAM Ro
 
 ## TODO
 
+* Implement interaction with Netpie 
 * Implement multithreading seperate UI from Lighting system.
 * Implement idependent lighting system base of brightness in the area
 
