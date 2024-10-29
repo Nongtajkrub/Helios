@@ -37,8 +37,12 @@ namespace program {
 		for (u8 i = 0; i < NP_COUNT; i++) {
 			np::make(&light->pixels[i], NP_PINS[i], 1);
 		}
-		set_all_color(light, DEF_NP_R, DEF_NP_G, DEF_NP_B);
-	
+		//set_all_color(light, DEF_NP_R, DEF_NP_G, DEF_NP_B);
+		np::color(&light->pixels[0], 255, 0, 0);
+		np::color(&light->pixels[1], 0, 255, 0);
+		np::color(&light->pixels[2], 0, 0, 255);
+		np::color(&light->pixels[3], 255, 255, 255);
+
 		// init setting
 		init_setting(light);
 	}
@@ -73,10 +77,10 @@ namespace program {
 	// this is unreadable
 	static inline u8 cal_np_distance(u8 np1_i, u8 np2_i) {
 		// |x1 - x2| + |y1 - y2|
-		return abs(
-			round((f32)np1_i / (f32)NP_ROWS) - round((f32)np2_i / (f32)NP_ROWS)
-			) + abs(
-				round(np1_i % NP_COLS) - (u8)round(np2_i % NP_COLS)
+		return fabs(
+			(np1_i % NP_COLS) - (np2_i % NP_COLS)
+			) + fabs(
+				(floor((f32)np1_i / (f32)NP_COLS)) - (floor((f32)np2_i / (f32)NP_COLS))
 				);
 	}
 
@@ -103,7 +107,7 @@ namespace program {
 				}
 
 				// compute weight
-				f32 w = (f32)cal_np_distance(src, nbr) * (f32)RPWM;
+				f32 w = (f32)RPWM / (f32)cal_np_distance(src, nbr);
 
 				// compute result
 				result += (u8)round(w * (f32)ldr::get_cache(&light->ldrs[nbr]));
@@ -130,6 +134,7 @@ namespace program {
 			//Serial.print(i);
 			//Serial.print(" brightness: ");
 			//Serial.println(ldr::get_cache(&light->ldrs[i]));
+			
 			np::brightness(&light->pixels[i], ldr::get_cache(&light->ldrs[i]));
 		}
 	}

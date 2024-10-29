@@ -22,8 +22,8 @@
 		#define LDR_COUNT NP_COUNT
 	#endif // #ifndef GET_GLOBAL_SETTINGS
 
-	const u8 LDR_PINS[LDR_COUNT] = {34, 35, 32, 33};
-	const u8 NP_PINS[NP_COUNT] = {19, 16, 18, 17};
+	constexpr u8 LDR_PINS[LDR_COUNT] = {33, 32, 35, 34};
+	constexpr u8 NP_PINS[NP_COUNT] = {17, 18, 16, 19};
 
 	#define NP_ROWS 2
 	#define NP_COLS 2
@@ -36,11 +36,11 @@
 	#define RNF CALULATE_RNF(4063)
 
 	// BPWM - READING_PROPAGATION_WEIGHT_MULTIPLIER
-	#define RPWM 0.05
+	#define RPWM 0.1
 #endif // #ifdef GET_LIGHT_SETTINGS
 
 #ifdef GET_MAIN_SETTINGS
-	#define LOOP_DELAY 50
+	#define LOOP_DELAY 50 
 
 	#define UI_THREAD_STACK_SIZE 128
 #endif //#ifdef GET_MAIN_SETTINGS
