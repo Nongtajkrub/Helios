@@ -5,6 +5,7 @@ Helios is a name for the dynamic lighting system that I am developing for my STE
 ## TODO
 
 * Implement interaction with Netpie 
+* implement light smoothing
 * Implement multithreading seperate UI from Lighting system.
 * Implement idependent lighting system base of brightness in the area
 
