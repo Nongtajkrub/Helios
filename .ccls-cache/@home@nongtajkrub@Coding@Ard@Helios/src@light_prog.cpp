@@ -134,10 +134,10 @@ namespace program {
 		cal_brightness(light);
 
 		for (u8 i = 0; i < NP_COUNT; i++) {
-			Serial.print("brightness: ");
-			Serial.println(ldr::get_cache(&light->ldrs[i]));
+			//Serial.print("brightness: ");
+			//Serial.println(ldr::get_cache(&light->ldrs[i]));
 
-			//np::brightness(&light->pixels[i], ldr::get_cache(&light->ldrs[i]));
+			np::brightness(&light->pixels[i], ldr::get_cache(&light->ldrs[i]));
 		}
 	}
 
