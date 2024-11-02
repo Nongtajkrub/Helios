@@ -22,8 +22,8 @@
 		#define LDR_COUNT NP_COUNT
 	#endif // #ifndef GET_GLOBAL_SETTINGS
 
-	constexpr u8 LDR_PINS[LDR_COUNT] = {33, 32, 35, 34};
-	constexpr u8 NP_PINS[NP_COUNT] = {17, 18, 16, 19};
+	constexpr u8 LDR_PINS[] = {33, 32, 35, 34};
+	constexpr u8 NP_PINS[] = {17, 18, 16, 19};
 
 	#define NP_ROWS 2
 	#define NP_COLS 2
@@ -40,8 +40,9 @@
 #endif // #ifdef GET_LIGHT_SETTINGS
 
 #ifdef GET_MAIN_SETTINGS
-	#define LOOP_DELAY 50 
+	#define LOG
 
+	#define LOOP_DELAY 50
 	#define UI_THREAD_STACK_SIZE 128
 #endif //#ifdef GET_MAIN_SETTINGS
 

@@ -1,6 +1,6 @@
-#include <Arduino.h>
+#pragma once
 
-#define PTR_SIZE sizeof(void*)
+#include <Arduino.h>
 
 typedef uint64_t u64;
 typedef uint32_t u32;
@@ -13,3 +13,7 @@ typedef int16_t i16;
 typedef int8_t  i8;
 
 typedef float f32;
+
+typedef void (*func)(void*);
+
+constexpr u16 PTR_SIZE = sizeof(void*);

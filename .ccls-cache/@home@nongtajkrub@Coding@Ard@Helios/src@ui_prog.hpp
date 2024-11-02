@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ui.hpp"
+
 #include "button.hpp"
 
 namespace program {
@@ -9,11 +10,13 @@ namespace program {
 		SETTING,
 		MODE_SETTING,
 		QUICK_ACT,
-		TOGGLE_QUICK_ACT
+		TOGGLE_QUICKACT
 	} ui_menu_t;
 
 	struct ui_data {
 		ui_menu_t on_menu;
+		// whether the ui have to be update
+		bool update;
 		I2C* lcd;
 
 		// use for communicating with light

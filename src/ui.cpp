@@ -5,7 +5,6 @@
 namespace ui {
 	static constexpr u16 ELEM_SIZE = sizeof(elem_t);
 	static constexpr u16 GROUP_SIZE = sizeof(group_t);
-	static constexpr u16 ELEM_PTR_SIZE = sizeof(elem_t*);
 
 	void make(elem_t* elem, const char* text, type_t type) {
 		const u16 TEXT_SIZE = strlen(text) + 1;
@@ -33,18 +32,18 @@ namespace ui {
 
 	// use int for count to prevent argument promotion
 	void group(group_t* group, I2C* screen, u8 rows, u8 cols, int count, ...) {
-		va_list elems;
-		va_start(elems, count);
-
 		group->count = count;
 		group->select = 0;
 		group->screen = screen;
 		screen->backlight();
 		group->rows = rows;
 		group->cols = cols;
-		group->elems = (elem_t**)calloc(count, ELEM_PTR_SIZE);
+		group->elems = (elem_t**)calloc(count, PTR_SIZE);
 
 		// add all element to the group
+		va_list elems;
+		va_start(elems, count);
+
 		for (u8 i = 0; i < count; i++) {
 			group->elems[i] = va_arg(elems, elem_t*);
 			group->elems[i]->id = i;

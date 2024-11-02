@@ -8,23 +8,23 @@
 #include <Arduino.h>
 
 #include "type.hpp"
-#include <LiquidCrystal_I2C/LiquidCrystal_I2C.h>
+#include <LiquidCrystal_I2C.h>
 
 #define NO_WRAP 0
 
 typedef LiquidCrystal_I2C I2C;
 
 namespace ui {
+	extern bool auto_update;
+
 	typedef enum : u8 {
 		TXT,
 		OPT
 	} type_t;
 
-	// ui element
 	typedef struct elem {
 		type_t type;
-		// the element count at the time of creation
-		// it will be the row that the element is on
+		// id will be the row that the element is on
 		u8 id;
 		// what will be show on the screen
 		char* text;
@@ -37,12 +37,11 @@ namespace ui {
 		// what element is the selecter on
 		// store as the id of the element
 		u8 select;
-		// lcd that will be use to show the ui 
+		
 		I2C* screen;
 		u8 rows;
 		u8 cols;
 
-		// elements in element group
 		elem_t** elems;
 	} group_t;
 

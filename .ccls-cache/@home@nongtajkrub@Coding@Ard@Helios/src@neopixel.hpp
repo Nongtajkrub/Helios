@@ -1,7 +1,7 @@
 #pragma once
 
 #include "type.hpp"
-#include <Adafruit_NeoPixel/Adafruit_NeoPixel.h>
+#include <Adafruit_NeoPixel.h>
 
 typedef Adafruit_NeoPixel Neopixel;
 extern bool np_auto_show;

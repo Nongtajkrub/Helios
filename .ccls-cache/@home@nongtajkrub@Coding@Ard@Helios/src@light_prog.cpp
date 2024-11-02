@@ -70,6 +70,8 @@ namespace program {
 	// caching all ldr reading 
 	static void cache_ldr_reading(struct light_data* light) {
 		for (u8 i = 0; i < LDR_COUNT; i++) {
+			Serial.print("LDR: ");
+			Serial.println(ldr::read(&light->ldrs[i]));
 			ldr::cache_reading(&light->ldrs[i]);
 		}
 	}
@@ -113,7 +115,8 @@ namespace program {
 				result += (u8)round(w * (f32)ldr::get_cache(&light->ldrs[nbr]));
 			}
 
-			ldr::set_cache(&light->ldrs[src], result);
+			// cap the result to 100 and cache it 
+			ldr::set_cache(&light->ldrs[src], max(100, result));
 		}
 	}
 
@@ -131,11 +134,10 @@ namespace program {
 		cal_brightness(light);
 
 		for (u8 i = 0; i < NP_COUNT; i++) {
-			//Serial.print(i);
-			//Serial.print(" brightness: ");
-			//Serial.println(ldr::get_cache(&light->ldrs[i]));
-			
-			np::brightness(&light->pixels[i], ldr::get_cache(&light->ldrs[i]));
+			Serial.print("brightness: ");
+			Serial.println(ldr::get_cache(&light->ldrs[i]));
+
+			//np::brightness(&light->pixels[i], ldr::get_cache(&light->ldrs[i]));
 		}
 	}
 

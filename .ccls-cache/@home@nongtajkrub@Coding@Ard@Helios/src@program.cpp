@@ -40,8 +40,12 @@ namespace program {
 	}
 
 	void setup(struct data* data) {
+		#ifdef LOG
+			Serial.begin(9600);
+		#endif // #ifdef LOG
+
 		light_init(&data->light);
-		//ui_init(&data->ui, &data->light);
+		ui_init(&data->ui, &data->light);
 		/*
 		xTaskCreate(
 			ui_thread,
@@ -68,8 +72,8 @@ namespace program {
 	}	
 
 	void loop(struct data* data) {
-		light_loop(&data->light);
-		//ui_loop(&data->ui);
+		//light_loop(&data->light);
+		ui_loop(&data->ui);
 		delay(LOOP_DELAY);
 		//vTaskDelay(LOOP_DELAY / portTICK_PERIOD_MS);
 	}

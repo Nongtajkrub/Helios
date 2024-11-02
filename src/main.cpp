@@ -5,7 +5,6 @@
 struct program::data program_data;
 
 void setup() {
-	Serial.begin(9600);
 	program::setup(&program_data);
 }
 

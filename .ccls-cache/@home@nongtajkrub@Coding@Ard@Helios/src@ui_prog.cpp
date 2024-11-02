@@ -23,7 +23,11 @@
 
 #define DEF_MENU_LOOP(MENU)                                                   \
 	do {                                                                      \
-		ui::show(&(MENU).group);                                              \
+		if (ui->update) {                                                     \
+			ui::show(&(MENU).group);                                          \
+			ui->update = false;                                               \
+		}                                                                     \
+		                                                                      \
 		control_loop(ui, &(MENU).group);                                      \
 	} while (0) 
 
@@ -119,6 +123,7 @@ namespace program {
 		init_setting_mode_menu(ui);
 		init_quickact_menu(ui);
 		init_quickact_toggle_menu(ui);
+		ui::show(&ui->main.group);
 
 		init_button(ui);
 	}
@@ -182,7 +187,7 @@ namespace program {
 		case 0: // header_txt
 			break;
 		case 1: // toggle
-			ui->on_menu = TOGGLE_QUICK_ACT;
+			ui->on_menu = TOGGLE_QUICKACT;
 			break;
 		case 2: // back_opt
 			ui->on_menu = MAIN;
@@ -222,7 +227,7 @@ namespace program {
 		case QUICK_ACT:
 			control_quickact_handle_sel(ui, group);
 			break;
-		case TOGGLE_QUICK_ACT:
+		case TOGGLE_QUICKACT:
 			control_quickact_toggle_handle_sel(ui, group);
 			break;
 		}
@@ -231,15 +236,18 @@ namespace program {
 	static void control_loop(struct ui_data* ui, ui::group_t* group) {
 		if (button::state(&ui->up_button)) {
 			ui::selector_up(group);
+			ui->update = true;
 		} else if (button::state(&ui->down_button)) {
 			ui::selector_down(group);
+			ui->update = true;
 		} else if (button::state(&ui->sel_button)) {
 			control_handle_sel(ui, group);
+			ui->update = true;
 		}
 	}
 
 	// quickact toggle menu only work in manual mode
-	static void qucikact_menu_loop(struct ui_data* ui) {
+	static bool quickact_can_access(struct ui_data* ui) {
 		// show error and go back to main menu if not in manual mode
 		if (!light_is_manu(ui->light)) {
 			ui::show(NOT_MANU_ERR_MSG, ui->lcd, 0, 0, LCD_COLS);
@@ -247,12 +255,10 @@ namespace program {
 			// delay 3 seconds
 			vTaskDelay(3000 / portTICK_PERIOD_MS);
 			ui->on_menu = MAIN;
-			return;
+			return false;
 		}
 
-		// show menu if in manual mode
-		ui::show(&ui->quickact.group);
-		control_loop(ui, &ui->quickact.group);
+		return true;
 	}
 
 	void ui_loop(struct ui_data* ui) {
@@ -267,9 +273,12 @@ namespace program {
 			DEF_MENU_LOOP(ui->setting_mode);
 			break;
 		case QUICK_ACT:
-			qucikact_menu_loop(ui);
+			// quickact can only be access in manual mode
+			if (quickact_can_access(ui)) {
+				DEF_MENU_LOOP(ui->quickact);
+			}
 			break;
-		case TOGGLE_QUICK_ACT:
+		case TOGGLE_QUICKACT:
 			DEF_MENU_LOOP(ui->quickact_toggle);
 			break;
 		}
