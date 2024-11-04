@@ -1,3 +1,5 @@
+// TODO: Fix bug where smoothing will alway output 0
+
 #include "light_prog.hpp"
 #include "ui_prog.hpp"
 
@@ -39,9 +41,9 @@ namespace program {
 		}
 		//set_all_color(light, DEF_NP_R, DEF_NP_G, DEF_NP_B);
 		np::color(&light->pixels[0], 255, 0, 0);
-		np::color(&light->pixels[1], 0, 255, 0);
-		np::color(&light->pixels[2], 0, 0, 255);
-		np::color(&light->pixels[3], 255, 255, 255);
+		//np::color(&light->pixels[1], 0, 255, 0);
+		//np::color(&light->pixels[2], 0, 0, 255);
+		//np::color(&light->pixels[3], 255, 255, 255);
 
 		// init setting
 		init_setting(light);
@@ -70,13 +72,34 @@ namespace program {
 	// caching all ldr reading 
 	static void cache_ldr_reading(struct light_data* light) {
 		for (u8 i = 0; i < LDR_COUNT; i++) {
-			Serial.print("LDR: ");
-			Serial.println(ldr::read(&light->ldrs[i]));
 			ldr::cache_reading(&light->ldrs[i]);
 		}
 	}
 
-	// this is unreadable
+	// normalize all reading to be between 0 - 100
+	static void reading_to_brightness(struct light_data* light) {	
+		for (u8 i = 0; i < LDR_COUNT; i++) {
+			light->brightness[i] = 
+				(u8)round((f32)ldr::get_cache(&light->ldrs[i]) / (f32)RNF);
+		}
+	}
+
+	// (i1 + i2 + i3 ...) / LDR_CACHE_SIZE
+	static void smooth_reading(struct light_data* light) {
+		for (u8 i = 0; i < LDR_COUNT; i++) {
+			u32 sum = 0;
+
+			for (u8 j = 0; j < LDR_CACHE_SIZE; j++) {
+				sum += ldr::get_cache(&light->ldrs[i], j);
+			}
+
+			u16 mean = max((u16)round((f32)sum / (f32)LDR_CACHE_SIZE), LDR_MAX_ADC);
+			Serial.println(mean);
+			//ldr::set_cache(&light->ldrs[i], (void*)&mean);
+		}
+	}
+
+	// calculate distance between 2 neopixel (this is unreadable)
 	static inline u8 cal_np_distance(u8 np1_i, u8 np2_i) {
 		// |x1 - x2| + |y1 - y2|
 		return fabs(
@@ -86,18 +109,10 @@ namespace program {
 				);
 	}
 
-	// normalize all reading to be between 0 - 100
-	static void norm_readings(struct light_data* light) {	
-		for (u8 i = 0; i < LDR_COUNT; i++) {
-			ldr::set_cache(
-				&light->ldrs[i],
-				(u8)round((f32)ldr::get_cache(&light->ldrs[i]) / (f32)RNF)
-				);
-		}
-	}
-
-	// src_ldr_i is the index of the ldr that is not a neighbors 
-	static void propagate_readings(struct light_data* light) {
+	// src_ldr_i is the index of the ldr that is not a neighbors
+	// light propagate will only work if have more than one light
+	static void propagate_brightness(struct light_data* light) {
+	#if NP_COUNT > 1
 		for (u8 src = 0; src < LDR_COUNT; src++) {
 			u8 result = ldr::get_cache(&light->ldrs[src]);
 
@@ -116,25 +131,28 @@ namespace program {
 			}
 
 			// cap the result to 100 and cache it 
-			ldr::set_cache(&light->ldrs[src], max(100, result));
+			light->brightness[src] = max(100, result);
 		}
+	#endif // #if NP_COUNT != 1
 	}
 
 	// turn pure AO from LDR to brightness for each neopixel ranging between
 	// 0 - 100 calculation result get store in ldr cache
 	static inline void cal_brightness(struct light_data* light) {
 		cache_ldr_reading(light);
-		norm_readings(light);
-		propagate_readings(light);
+		smooth_reading(light);
+		reading_to_brightness(light);
+		propagate_brightness(light);
 	}
 
 	// inline because I want this to be very fast
 	static inline void auto_mode_loop(struct light_data* light) {
-		// calculate brightness and store them in the ldrs cache
 		cal_brightness(light);
 
 		for (u8 i = 0; i < NP_COUNT; i++) {
-			//Serial.print("brightness: ");
+			Serial.print("brightness: ");
+			Serial.println(light->brightness[i]);
+			//Serial.print("reading: ");
 			//Serial.println(ldr::get_cache(&light->ldrs[i]));
 
 			np::brightness(&light->pixels[i], ldr::get_cache(&light->ldrs[i]));

@@ -1,5 +1,5 @@
 /*
- * This UI system is design so bad I think a horse was shove up my ass 
+ * This UI system is design so bad I think a horse was shove up my a** 
  * while I was writing it. If this is still here I forgot to delete it.
 */
 
