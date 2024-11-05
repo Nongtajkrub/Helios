@@ -15,8 +15,12 @@ void slwin_destroy(slwin_t* win);
 
 void slwin_slide(slwin_t* win, void* data);
 
+inline u16 slwin_cal_i(slwin_t* win, u16 i) {
+	return (win->add_i + i) % win->size;
+}
+
 inline void* slwin_get(slwin_t* win, u16 i) {
-	return win->data[(win->add_i + i) % win->size];
+	return win->data[slwin_cal_i(win, i)];
 }
 
 // get the last element of a sliding window
@@ -25,12 +29,12 @@ inline void* slwin_get_newest(slwin_t* win) {
 }
 
 inline void slwin_set(slwin_t* win, u16 i, void* val) {
-	memcpy(win->data[(win->add_i + i) & win->size], val, win->data_size);
+	memcpy(win->data[slwin_cal_i(win, i)], val, win->data_size);
 }
 
 inline void slwin_set_newest(slwin_t* win, void* val) {
 	memcpy(
-		win->data[(win->add_i + (win->size - 1)) % win->size],
+		win->data[slwin_cal_i(win, win->size - 1)],
 		val,
 		win->data_size
 		);

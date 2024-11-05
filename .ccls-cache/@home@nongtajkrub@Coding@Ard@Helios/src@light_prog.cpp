@@ -39,11 +39,7 @@ namespace program {
 		for (u8 i = 0; i < NP_COUNT; i++) {
 			np::make(&light->pixels[i], NP_PINS[i], 1);
 		}
-		//set_all_color(light, DEF_NP_R, DEF_NP_G, DEF_NP_B);
-		np::color(&light->pixels[0], 255, 0, 0);
-		//np::color(&light->pixels[1], 0, 255, 0);
-		//np::color(&light->pixels[2], 0, 0, 255);
-		//np::color(&light->pixels[3], 255, 255, 255);
+		set_all_color(light, DEF_NP_R, DEF_NP_G, DEF_NP_B);
 
 		// init setting
 		init_setting(light);
@@ -76,26 +72,29 @@ namespace program {
 		}
 	}
 
-	// normalize all reading to be between 0 - 100
-	static void reading_to_brightness(struct light_data* light) {	
-		for (u8 i = 0; i < LDR_COUNT; i++) {
-			light->brightness[i] = 
-				(u8)round((f32)ldr::get_cache(&light->ldrs[i]) / (f32)RNF);
-		}
-	}
-
 	// (i1 + i2 + i3 ...) / LDR_CACHE_SIZE
 	static void smooth_reading(struct light_data* light) {
 		for (u8 i = 0; i < LDR_COUNT; i++) {
-			u32 sum = 0;
+			u16 sum = 0;
 
 			for (u8 j = 0; j < LDR_CACHE_SIZE; j++) {
 				sum += ldr::get_cache(&light->ldrs[i], j);
 			}
 
 			u16 mean = max((u16)round((f32)sum / (f32)LDR_CACHE_SIZE), LDR_MAX_ADC);
-			Serial.println(mean);
-			//ldr::set_cache(&light->ldrs[i], (void*)&mean);
+			if (mean != 0) {
+				ldr::set_cache(&light->ldrs[i], (void*)&mean);
+			}
+		}
+	}
+
+	// normalize all reading to be between 0 - 100
+	static void reading_to_brightness(struct light_data* light) {	
+		for (u8 i = 0; i < LDR_COUNT; i++) {
+			light->brightness[i] = max(
+				(u8)round((f32)ldr::get_cache(&light->ldrs[i]) / (f32)RTBNF), 
+				100
+				);
 		}
 	}
 
@@ -114,7 +113,7 @@ namespace program {
 	static void propagate_brightness(struct light_data* light) {
 	#if NP_COUNT > 1
 		for (u8 src = 0; src < LDR_COUNT; src++) {
-			u8 result = ldr::get_cache(&light->ldrs[src]);
+			u8 result = light->brightness[src];
 
 			// propagate reading
 			for (u8 nbr = 0; nbr < LDR_COUNT; nbr++) {
@@ -124,10 +123,10 @@ namespace program {
 				}
 
 				// compute weight
-				f32 w = (f32)RPWM / (f32)cal_np_distance(src, nbr);
+				f32 w = (f32)BPWM / (f32)cal_np_distance(src, nbr);
 
 				// compute result
-				result += (u8)round(w * (f32)ldr::get_cache(&light->ldrs[nbr]));
+				result += (u8)round(w * (f32)light->brightness[nbr]);
 			}
 
 			// cap the result to 100 and cache it 
@@ -140,7 +139,7 @@ namespace program {
 	// 0 - 100 calculation result get store in ldr cache
 	static inline void cal_brightness(struct light_data* light) {
 		cache_ldr_reading(light);
-		smooth_reading(light);
+		//smooth_reading(light);
 		reading_to_brightness(light);
 		propagate_brightness(light);
 	}
@@ -150,12 +149,12 @@ namespace program {
 		cal_brightness(light);
 
 		for (u8 i = 0; i < NP_COUNT; i++) {
-			Serial.print("brightness: ");
-			Serial.println(light->brightness[i]);
+			//Serial.print("brightness: ");
+			//Serial.println(light->brightness[i]);
 			//Serial.print("reading: ");
 			//Serial.println(ldr::get_cache(&light->ldrs[i]));
 
-			np::brightness(&light->pixels[i], ldr::get_cache(&light->ldrs[i]));
+			np::brightness(&light->pixels[i], light->brightness[i]);
 		}
 	}
 

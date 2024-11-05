@@ -18,7 +18,7 @@
 	// prevent redefinition
 	#ifndef GET_GLOBAL_SETTINGS
 		// NP_COUNT and LDR_COUNT always have to be the same 
-		#define NP_COUNT 1
+		#define NP_COUNT 4
 		#define LDR_COUNT NP_COUNT
 	#endif // #ifndef GET_GLOBAL_SETTINGS
 
@@ -33,16 +33,17 @@
 
 	#define LDR_MAX_ADC 4063
 
-	// RNF - READING_NORMALIZATION_FACTOR
-	#define RNF ((float)(LDR_MAX_ADC) / 100.0f)
+	// RNF - READING_TO_BRIGHTNESS_NORMALIZATION_FACTOR
+	#define RTBNF ((float)(LDR_MAX_ADC) / 100.0f)
 
-	// BPWM - READING_PROPAGATION_WEIGHT_MULTIPLIER
-	#define RPWM 0.1
+	// BPWM - BRIGHTNESS_PROPAGATION_WEIGHT_MULTIPLIER
+	#define BPWM 0.1
 #endif // #ifdef GET_LIGHT_SETTINGS
 
 #ifdef GET_MAIN_SETTINGS
 	#define LOG
 
+	#define SETUP_DELAY 500
 	#define LOOP_DELAY 50 
 	#define UI_THREAD_STACK_SIZE 128
 #endif //#ifdef GET_MAIN_SETTINGS
@@ -52,7 +53,7 @@
 	// prevent redefinition
 	#ifndef GET_LIGHT_SETTINGS
 		// NP_COUNT and LDR_COUNT always have to be the same 
-		#define NP_COUNT 1
+		#define NP_COUNT 4
 		#define LDR_COUNT NP_COUNT
 	#endif // #ifndef GET_LIGHT_SETTINGS
 #endif // #ifdef GET_GLOBAL_SETTING

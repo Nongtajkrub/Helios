@@ -46,6 +46,9 @@ namespace program {
 
 		light_init(&data->light);
 		ui_init(&data->ui, &data->light);
+
+		// delay to make sure everything is ready
+		delay(SETUP_DELAY);
 		/*
 		xTaskCreate(
 			ui_thread,
