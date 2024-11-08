@@ -4,14 +4,12 @@
 #include <Adafruit_NeoPixel.h>
 
 typedef Adafruit_NeoPixel Neopixel;
-extern bool np_auto_show;
 
 namespace np {
 	typedef struct {
 		Neopixel* neopixel;
 
 		u16 count;
-		u8 brightness;
 	} pixel_t;
 
 	void make(pixel_t* pixel, u8 pin, u16 count);

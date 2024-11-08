@@ -6,9 +6,6 @@ namespace np {
 	void make(pixel_t* pixel, u8 pin, u16 count) {
 		pixel->neopixel = new Neopixel(count, pin);
 		pixel->neopixel->begin();
-
-		pixel->count = count;
-		pixel->brightness = 100;
 	}
 
 	void destroy(pixel_t* pixel) {
@@ -21,7 +18,6 @@ namespace np {
 		if (np_auto_show) {
 			pixel->neopixel->show();
 		}
-		pixel->brightness = brightness;
 	}
 	
 	void color(pixel_t* pixel, u8 r, u8 g, u8 b) {
