@@ -149,7 +149,7 @@ namespace program {
 		cal_brightness(light);
 
 		for (u8 i = 0; i < NP_COUNT; i++) {
-			//Serial.print("brightness: ");
+			Serial.print("brightness: ");
 			//Serial.println(light->brightness[i]);
 			//Serial.print("reading: ");
 			//Serial.println(ldr::get_cache(&light->ldrs[i]));

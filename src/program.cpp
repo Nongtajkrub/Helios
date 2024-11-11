@@ -5,6 +5,8 @@
 #define GET_MAIN_SETTINGS
 #include "settings.hpp"
 
+#include <Arduino.h>
+
 namespace program {
 	static void light_thread(void* arg) {
 		/*
