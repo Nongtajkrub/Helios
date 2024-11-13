@@ -41,4 +41,8 @@ namespace program {
 	inline bool light_is_manu(struct light_data* light) {
 		return light->settings.mode.manual;
 	}
+
+	inline const u8* light_get_brightness(struct light_data* light) {
+		return light->brightness;
+	} 
 }

@@ -50,7 +50,7 @@ namespace program {
 		u8 brightness
 		) {
 		// if brightness is turn down to 0 neopixel wont turn back on
-		brightness = min(1, brightness);
+		brightness = min<u8, u8, u8>(1, brightness);
 
 		for (u8 i = 0; i < NP_COUNT; i++) {
 			np::brightness(&light->pixels[i], brightness);
@@ -81,7 +81,10 @@ namespace program {
 				sum += ldr::get_cache(&light->ldrs[i], j);
 			}
 
-			u16 mean = max((u16)round((f32)sum / (f32)LDR_CACHE_SIZE), LDR_MAX_ADC);
+			u16 mean = max<u16, u16, u16>(
+				(u16)round((f32)sum / (f32)LDR_CACHE_SIZE),
+				LDR_MAX_ADC
+				);
 			if (mean != 0) {
 				ldr::set_cache(&light->ldrs[i], (void*)&mean);
 			}
@@ -91,7 +94,7 @@ namespace program {
 	// normalize all reading to be between 0 - 100
 	static void reading_to_brightness(struct light_data* light) {	
 		for (u8 i = 0; i < LDR_COUNT; i++) {
-			light->brightness[i] = max(
+			light->brightness[i] = max<u8, u8, u8>(
 				(u8)round((f32)ldr::get_cache(&light->ldrs[i]) / (f32)RTBNF), 
 				100
 				);
@@ -130,7 +133,7 @@ namespace program {
 			}
 
 			// cap the result to 100 and cache it 
-			light->brightness[src] = max(100, result);
+			light->brightness[src] = max<u8, u8, u8>(100, result);
 		}
 	#endif // #if NP_COUNT != 1
 	}

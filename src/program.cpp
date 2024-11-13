@@ -42,12 +42,9 @@ namespace program {
 	}
 
 	void setup(struct data* data) {
-		#ifdef LOG
-			Serial.begin(9600);
-		#endif // #ifdef LOG
-
 		light_init(&data->light);
 		ui_init(&data->ui, &data->light);
+		netpie_init(&data->netpie, &data->light);
 
 		// delay to make sure everything is ready
 		delay(SETUP_DELAY);
@@ -77,8 +74,9 @@ namespace program {
 	}	
 
 	void loop(struct data* data) {
-		light_loop(&data->light);
-		ui_loop(&data->ui);
+		//light_loop(&data->light);
+		//ui_loop(&data->ui);
+		netpie_loop(&data->netpie);
 		delay(LOOP_DELAY);
 	}
 }

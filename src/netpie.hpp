@@ -1,22 +1,19 @@
-// TODO: implement netpie
-
 #pragma once
 
 #define DONT_SEND_OLD_PAYLOD
 #include "mqtt.hpp"
 
+#include "light_prog.hpp"
+
 namespace program {
 	struct netpie_data {
-		mqtt::client_t netpie;
+		struct mqtt::info serv_hint;
+		mqtt::client_t client;
 
-		struct {
-			const char* serv;
-			const u16 port;
-			const char* id;
-			const char* user;
-			const char* pass;
-		} info;
+		// use to communicate with ligth system
+		struct light_data* light;
 	};
 
-	void netpie_init();
+	void netpie_init(struct netpie_data* netpie,struct light_data* light);
+	void netpie_loop(struct netpie_data* netpie);
 }

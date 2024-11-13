@@ -3,12 +3,13 @@
 #define MAX_RETRY 10
 
 namespace mqtt {
-	void make(client_t* cli, WiFiClient& wifi, const char* serv, u16 port) {
-		cli->mqtt = PubSubClient(wifi);
-		cli->mqtt.setServer(serv, port);
+	void make(client_t* cli, struct info* hint) {
+		cli->wifi = WiFiClient();
+		cli->mqtt = PubSubClient(cli->wifi);
+		cli->mqtt.setServer(hint->serv, hint->port);
 	}
 
-	bool connect(client_t* cli, const char* id, const char* user, const char* pass) {
+	bool connect(client_t* cli, struct info* hint) {
 		// do nothing if already connected
 		if (cli->mqtt.connected()) {
 			return true;
@@ -16,7 +17,7 @@ namespace mqtt {
 
 		u16 retry = 0;
 
-		while (!cli->mqtt.connect(id, user, pass)) {
+		while (!cli->mqtt.connect(hint->id, hint->user, hint->pass)) {
 			if (retry > MAX_RETRY) {
 				return false;
 			}

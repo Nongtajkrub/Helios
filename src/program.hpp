@@ -2,6 +2,7 @@
 
 #include "ui_prog.hpp"
 #include "light_prog.hpp"
+#include "netpie.hpp"
 
 #include <Arduino.h>
 
@@ -9,6 +10,7 @@ namespace program {
 	struct data {
 		struct ui_data ui;
 		struct light_data light;
+		struct netpie_data netpie;
 	};
 
 	void setup(struct data* data);

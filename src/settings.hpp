@@ -44,7 +44,7 @@
 	#define LOG
 
 	#define SETUP_DELAY 500
-	#define LOOP_DELAY 50 
+	#define LOOP_DELAY 5000 
 	#define UI_THREAD_STACK_SIZE 128
 #endif //#ifdef GET_MAIN_SETTINGS
 
