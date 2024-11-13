@@ -1,14 +1,11 @@
 # Helios ☀️
 
-Helios is a name for the dynamic lighting system that I am developing for my STEAM Robotic project. It is written in C++ using the Arduino framwork.
+**More documentation will be added soon.**
+
+Helios is a Dynamic Lighting System written in C++ with the Arduino Framwork.
 
 ## TODO
 
-* Implement interaction with Netpie 
-* implement light smoothing
-* Implement multithreading seperate UI from Lighting system.
-* Implement idependent lighting system base of brightness in the area
-
-## DONE
-
-* Implement turning on and off light in manual mode
+* Make a full working prototype
+    * finish bulding the curcuit
+    * implement FreePie
