@@ -40,11 +40,19 @@
 	#define BPWM 0.1
 #endif // #ifdef GET_LIGHT_SETTINGS
 
+#ifdef GET_NETPIE_SETTINGS
+	#define DEF_MSG_SIZE 256
+	#define UPDATE_SHADOW_TOPIC "@shadow/data/update"
+
+	#define SUB_TOPICS "@msg/action"
+	#define SUB_COUNT 1
+#endif // #ifdef GET_NETPIE_SETTINGS
+
 #ifdef GET_MAIN_SETTINGS
 	#define LOG
 
 	#define SETUP_DELAY 500
-	#define LOOP_DELAY 5000 
+	#define LOOP_DELAY 50 
 	#define UI_THREAD_STACK_SIZE 128
 #endif //#ifdef GET_MAIN_SETTINGS
 

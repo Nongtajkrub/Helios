@@ -3,13 +3,11 @@
 
 // hidden.hpp is hide by gitignore to create pls check the example in README
 #define GET_MQTT_HIDDEN
+#define GET_NETPIE_SETTINGS
 #include "hidden.hpp"
 
 #include "netpie.hpp"
 #include "func.hpp"
-
-#define DEF_MSG_SIZE 256
-#define UPDATE_SHADOW_TOPIC "@shadow/data/update"
 
 namespace program {
 	static void init_hint(struct netpie_data* netpie) {
@@ -22,9 +20,10 @@ namespace program {
 
 	void netpie_init(struct netpie_data* netpie,struct light_data* light) {
 		init_hint(netpie);
-		mqtt::make(&netpie->client, &netpie->serv_hint);
 
+		mqtt::make(&netpie->client, &netpie->serv_hint);
 		mqtt::connect(&netpie->client, &netpie->serv_hint);
+		mqtt::sub(&netpie->client, SUB_COUNT, SUB_TOPICS);
 
 		netpie->light = light;
 	}
@@ -38,6 +37,7 @@ namespace program {
 		*/
 
 		u8 average_brightness = 10;
+
 		// format msg to send
 		char msg[DEF_MSG_SIZE];
 		sprintf(
@@ -53,5 +53,10 @@ namespace program {
 
 	void netpie_loop(struct netpie_data* netpie) {
 		netpie_update_brightness(netpie);
+
+		// if disconnect reconnect and resub all sub
+		if (!mqtt::loop(&netpie->client, &netpie->serv_hint)) {
+			mqtt::sub(&netpie->client, SUB_COUNT, SUB_TOPICS);
+		}
 	}
 }

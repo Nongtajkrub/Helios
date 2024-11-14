@@ -1,4 +1,3 @@
-/*
 #include "program.hpp"
 #include "type.hpp"
 #include <Arduino.h>
@@ -13,8 +12,8 @@ static void connect_wifi() {
 	WiFi.begin(WIFI_SSID, WIFI_PASS);
 
 	while (WiFi.status() != WL_CONNECTED) {
-		delay(500);
 		Serial.print(".");
+		delay(1000);
 	}
 
 	Serial.println();
@@ -32,19 +31,4 @@ void setup() {
 
 void loop() {
 	program::loop(&program_data);
-}
-*/
-
-#define LDR_PIN 34
-
-#include <Arduino.h>
-
-void setup() {
-	Serial.begin(9600);
-	pinMode(LDR_PIN, INPUT);
-}
-
-void loop() {
-	Serial.println(analogRead(LDR_PIN));
-	delay(500);
 }

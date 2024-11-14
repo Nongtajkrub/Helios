@@ -1,6 +1,5 @@
 #pragma once
 
-#define DONT_SEND_OLD_PAYLOD
 #include "mqtt.hpp"
 
 #include "light_prog.hpp"

@@ -19,16 +19,28 @@ namespace mqtt {
 		WiFiClient wifi;
 		PubSubClient mqtt;
 
-	#ifdef DONT_SEND_OLD_PAYLOD 
 		// use to prevent resending old data
 		const char* old_payload;
-	#endif // #ifdef CHECK_OLD_PAYLOAD
 	} client_t;
 
 	void make(client_t* cli, struct info* hint);
 
 	bool connect(client_t* cli, struct info* hint);
-	void disconnect(client_t* cli);
 
+	bool loop(client_t* cli, struct info* hint);
+
+	void sub(client_t* cli, int count, ...);
 	bool send(client_t* cli, const char* topic, const char* payload);
+
+	inline void disconnect(client_t* cli) {
+		cli->mqtt.disconnect();
+	}
+
+	inline bool is_connect(client_t* cli) {
+		return cli->mqtt.connected();
+	}
+
+	inline void sub(client_t* cli, const char* topic) {
+		cli->mqtt.subscribe(topic);
+	}
 }

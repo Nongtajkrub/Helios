@@ -14,4 +14,6 @@ typedef int8_t  i8;
 
 typedef float f32;
 
+typedef unsigned int uint;
+
 constexpr u16 PTR_SIZE = sizeof(void*);
