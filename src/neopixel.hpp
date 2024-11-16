@@ -1,22 +1,31 @@
+// alias for Adafruit_NeoPixel to let me write neopixel code C style
+
 #pragma once
 
 #include "type.hpp"
 #include <Adafruit_NeoPixel.h>
 
-typedef Adafruit_NeoPixel Neopixel;
-
 namespace np {
-	typedef struct {
-		Neopixel* neopixel;
+	typedef Adafruit_NeoPixel pixel_t;
 
-		u16 count;
-	} pixel_t;
+	inline void make(pixel_t& pixel, u8 pin, u16 count) {
+		pixel = pixel_t(count, pin);
+		pixel.begin();
+	}
 
-	void make(pixel_t* pixel, u8 pin, u16 count);
-	void destroy(pixel_t* pixel);
+	inline void color(pixel_t& pixel, u8 r, u8 g, u8 b) {
+		pixel.fill(pixel.Color(r, g, b));
+	}
 
-	void brightness(pixel_t* pixel, u8 brightness);
+	inline void color(pixel_t& pixel, u16 i, u8 r, u8 g, u8 b) {
+		pixel.setPixelColor(i, r, g, b);
+	}
 
-	void color(pixel_t* pixel, u8 r, u8 g, u8 b);
-	void color(pixel_t* pixel, u16 i, u8 r, u8 g, u8 b);
+	inline void brightness(pixel_t& pixel, u8 brightness) {
+		pixel.setBrightness(brightness);
+	}
+
+	inline void show(pixel_t& pixel) {
+		pixel.show();
+	}
 }

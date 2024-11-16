@@ -15,8 +15,6 @@
 typedef LiquidCrystal_I2C I2C;
 
 namespace ui {
-	extern bool auto_update;
-
 	typedef enum : u8 {
 		TXT,
 		OPT

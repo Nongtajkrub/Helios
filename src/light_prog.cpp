@@ -12,7 +12,7 @@
 namespace program {
 	static void set_all_color(struct light_data* light, u8 r, u8 g, u8 b) {
 		for (u8 i = 0; i < NP_COUNT; i++) {
-			np::color(&light->pixels[i], r, g, b);
+			np::color(light->pixels[i], r, g, b);
 		}
 	}
 
@@ -37,7 +37,7 @@ namespace program {
 
 		// init neopixel
 		for (u8 i = 0; i < NP_COUNT; i++) {
-			np::make(&light->pixels[i], NP_PINS[i], 1);
+			np::make(light->pixels[i], NP_PINS[i], 1);
 		}
 		set_all_color(light, DEF_NP_R, DEF_NP_G, DEF_NP_B);
 
@@ -53,7 +53,7 @@ namespace program {
 		brightness = min<u8, u8, u8>(1, brightness);
 
 		for (u8 i = 0; i < NP_COUNT; i++) {
-			np::brightness(&light->pixels[i], brightness);
+			np::brightness(light->pixels[i], brightness);
 		}
 	}
 
@@ -157,7 +157,7 @@ namespace program {
 			//Serial.print("reading: ");
 			//Serial.println(ldr::get_cache(&light->ldrs[i]));
 
-			np::brightness(&light->pixels[i], light->brightness[i]);
+			np::brightness(light->pixels[i], light->brightness[i]);
 		}
 	}
 
