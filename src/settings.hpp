@@ -22,14 +22,14 @@
 		#define LDR_COUNT NP_COUNT
 	#endif // #ifndef GET_GLOBAL_SETTINGS
 
-	constexpr u8 LDR_PINS[] = {33, 32, 34, 35};
-	constexpr u8 NP_PINS[] = {19, 18, 17, 15};
+	constexpr u8 LDR_PINS[] = {32, 34, 33, 35};
+	constexpr u8 NP_PINS[] = {18, 17, 19, 15};
 
 	#define NP_ROWS 2
 	#define NP_COLS 2
-	#define DEF_NP_R 25
-	#define DEF_NP_G 0
-	#define DEF_NP_B 0 
+	#define DEF_NP_R 100
+	#define DEF_NP_G 100
+	#define DEF_NP_B 100
 
 	#define LDR_MAX_ADC 4096
 
@@ -62,3 +62,7 @@
 		#define LDR_COUNT NP_COUNT
 	#endif // #ifndef GET_LIGHT_SETTINGS
 #endif // #ifdef GET_GLOBAL_SETTING
+
+#ifdef GET_DEBUG_SETTINGS
+	#define INVERT_SIGNAL 1
+#endif // #ifdef DEBUG

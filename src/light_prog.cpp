@@ -3,6 +3,7 @@
 #include "light_prog.hpp"
 #include "ui_prog.hpp"
 
+#define GET_DEBUG_SETTINGS 
 #define GET_LIGHT_SETTINGS
 #include "settings.hpp"
 
@@ -33,7 +34,7 @@ namespace program {
 	void light_init(struct light_data* light) {
 		// init ldr
 		for (u8 i = 0; i < LDR_COUNT; i++) {
-			ldr::make(&light->ldrs[i], LDR_PINS[i]);
+			ldr::make(LDR_PINS[i]);
 		}
 
 		// init neopixel
@@ -63,47 +64,20 @@ namespace program {
 		}
 	}
 
-	static void manual_mode_loop(struct light_data* light) {
-		if (light->settings.mode.on) {
-			set_brightness(light, 100);
-		} else {
-			set_brightness(light, 0);
-		}
-	}
-
-	// caching all ldr reading 
-	static void cache_ldr_reading(struct light_data* light) {
-		for (u8 i = 0; i < LDR_COUNT; i++) {
-			ldr::cache_reading(&light->ldrs[i]);
-		}
-	}
-
-	// (i1 + i2 + i3 ...) / LDR_CACHE_SIZE
-	static void smooth_reading(struct light_data* light) {
-		for (u8 i = 0; i < LDR_COUNT; i++) {
-			u16 sum = 0;
-
-			for (u8 j = 0; j < LDR_CACHE_SIZE; j++) {
-				sum += ldr::get_cache(&light->ldrs[i], j);
-			}
-
-			u16 mean = max<u16, u16, u16>(
-				(u16)round((f32)sum / (f32)LDR_CACHE_SIZE),
-				LDR_MAX_ADC
-				);
-			if (mean != 0) {
-				ldr::set_cache(&light->ldrs[i], (void*)&mean);
-			}
-		}
-	}
-
 	// normalize all reading to be between 1 - 100
 	static void reading_to_brightness(struct light_data* light) {	
 		for (u8 i = 0; i < LDR_COUNT; i++) {
+		#if INVERT_SIGNAL == 1
 			light->brightness[i] = max<u8, u8, u8>(
 				100,
-				(u8)round((f32)ldr::get_cache(&light->ldrs[i]) / (f32)RTBNF)
+				(u8)round((f32)(LDR_MAX_ADC - ldr::read(LDR_PINS[i])) / (f32)RTBNF)
 				);
+		#else
+			light->brightness[i] = max<u8, u8, u8>(
+				100,
+				(u8)round((f32)ldr::read(LDR_PINS[i]) / (f32)RTBNF)
+				);
+		#endif // #ifdef INVERT_SIGNAL
 		}
 	}
 
@@ -118,9 +92,7 @@ namespace program {
 	}
 
 	// src_ldr_i is the index of the ldr that is not a neighbors
-	// light propagate will only work if have more than one light
 	static void propagate_brightness(struct light_data* light) {
-	#if NP_COUNT > 1
 		for (u8 src = 0; src < LDR_COUNT; src++) {
 			u8 result = light->brightness[src];
 
@@ -141,27 +113,31 @@ namespace program {
 			// cap the result to 100 and cache it 
 			light->brightness[src] = max<u8, u8, u8>(100, result);
 		}
-	#endif // #if NP_COUNT != 1
-	}
-
-	// turn pure AO from LDR to brightness for each neopixel ranging between
-	// 0 - 100 calculation result get store in brightness cahce 
-	static inline void cal_brightness(struct light_data* light) {
-		cache_ldr_reading(light);
-		//smooth_reading(light);
-		reading_to_brightness(light);
-		//propagate_brightness(light);
 	}
 
 	// inline because I want this to be very fast
 	static inline void auto_mode_loop(struct light_data* light) {
-		cal_brightness(light);
+		reading_to_brightness(light);
+	#if NP_COUNT > 1
+		propagate_brightness(light);
+	#endif // #if NP_COUNT != 1
 
 		for (u8 i = 0; i < NP_COUNT; i++) {
 			set_brightness(light, i, light->brightness[i]);
 		}
+	}
 
-		// reset the color because set_brightness is lossy
+	static void manual_mode_loop(struct light_data* light) {
+		if (light->settings.mode.on) {
+			set_brightness(light, 100);
+		} else {
+			set_brightness(light, 0);
+		}
+	}
+
+	// reset color needed because changing brightness is lossy and will
+	// lose color data
+	static void reset_color(struct light_data* light) {
 		set_all_color(
 			light,
 			light->settings.color.r,
@@ -171,10 +147,12 @@ namespace program {
 	}
 
 	void light_loop(struct light_data* light) {
-		if (light->settings.mode.manual) {
-			manual_mode_loop(light);
-		} else {
+		if (!light->settings.mode.manual) {
 			auto_mode_loop(light);
+		} else {
+			manual_mode_loop(light);
 		}
+
+		reset_color(light);
 	}
 }

@@ -79,7 +79,7 @@ namespace program {
 
 	void loop(struct data* data) {
 		light_loop(&data->light);
-		//ui_loop(&data->ui);
+		ui_loop(&data->ui);
 		//netpie_loop(&data->netpie);
 		delay(LOOP_DELAY);
 	}

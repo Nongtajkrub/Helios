@@ -7,7 +7,6 @@
 
 namespace program {
 	struct light_data {
-		ldr::ldr_t ldrs[LDR_COUNT];
 		np::pixel_t* pixels[NP_COUNT];
 		u8 brightness[NP_COUNT];
 
