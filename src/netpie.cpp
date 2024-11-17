@@ -29,25 +29,21 @@ namespace program {
 	}
 
 	static void netpie_update_brightness(struct netpie_data* netpie) {
-		/*
 		u8 average_brightness = average_arr<u8, u8, u8>(
 			light_get_brightness(netpie->light),
 			NP_COUNT
 			);
-		*/
-
-		u8 average_brightness = 10;
 
 		// format msg to send
 		char msg[DEF_MSG_SIZE];
 		sprintf(
 			msg,
-			"{\"data\": {\"average_light_brightness\": %d}}",
+			"{\"data\": {\"average_light_brightness\": %d}}", 
 			average_brightness
 			);
 
 		if (!mqtt::send(&netpie->client, UPDATE_SHADOW_TOPIC, msg)) {
-			// TODO: handle error
+			// TODO: Handle error
 		}
 	}
 

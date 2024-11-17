@@ -8,8 +8,8 @@
 
 namespace program {
 	struct data {
-		struct ui_data ui;
 		struct light_data light;
+		struct ui_data ui;
 		struct netpie_data netpie;
 	};
 

@@ -123,7 +123,13 @@ namespace program {
 	#endif // #if NP_COUNT != 1
 
 		for (u8 i = 0; i < NP_COUNT; i++) {
-			set_brightness(light, i, light->brightness[i]);
+			u8 brightness = light->brightness[i];
+
+			if (brightness < NBCOT) {
+				set_brightness(light, i, 1);
+				continue;
+			}
+			set_brightness(light, i, brightness);
 		}
 	}
 

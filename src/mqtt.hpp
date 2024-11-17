@@ -16,11 +16,11 @@ namespace mqtt {
 	};
 
 	typedef struct {
-		WiFiClient wifi;
-		PubSubClient mqtt;
+		WiFiClient* wifi;
+		PubSubClient* mqtt;
 
 		// use to prevent resending old data
-		const char* old_payload;
+		char* old_payload;
 	} client_t;
 
 	void make(client_t* cli, struct info* hint);
@@ -33,14 +33,14 @@ namespace mqtt {
 	bool send(client_t* cli, const char* topic, const char* payload);
 
 	inline void disconnect(client_t* cli) {
-		cli->mqtt.disconnect();
+		cli->mqtt->disconnect();
 	}
 
 	inline bool is_connect(client_t* cli) {
-		return cli->mqtt.connected();
+		return cli->mqtt->connected();
 	}
 
 	inline void sub(client_t* cli, const char* topic) {
-		cli->mqtt.subscribe(topic);
+		cli->mqtt->subscribe(topic);
 	}
 }

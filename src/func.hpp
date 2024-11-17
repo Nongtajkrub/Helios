@@ -21,5 +21,5 @@ int_type_ret average_arr(const int_type_arr* arr, int_type_size size) {
 		average += arr[i];
 	}
 
-	return average / size;
+	return (int_type_ret)round((float)average / (float)size);
 }

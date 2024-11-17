@@ -8,79 +8,83 @@
 #include <Arduino.h>
 
 namespace program {
+	static SemaphoreHandle_t light_thread_ready;
+	static SemaphoreHandle_t ui_thread_ready;
+
 	static void light_thread(void* arg) {
-		/*
-		struct light_data* light = (struct light_data*)arg;
+		struct data* data = (struct data*)arg;
 
-		light_init(light);
-		while (true) {
-			light_loop(light);
+		light_init(&data->light);
+		xSemaphoreGive(light_thread_ready);
+
+		for (;;) {
+			light_loop(&data->light);
 			vTaskDelay(LOOP_DELAY / portTICK_PERIOD_MS);
-		}
-		*/
-
-		while (1) {
-			Serial.println("light");
-			vTaskDelay(1000 / portTICK_PERIOD_MS);
 		}
 	}
 
 	static void ui_thread(void* arg) {
-		/*
 		struct data* data = (struct data*)arg;
 
+		xSemaphoreTake(light_thread_ready, portMAX_DELAY);
+
 		ui_init(&data->ui, &data->light);
-		while (true) {
+		xSemaphoreGive(ui_thread_ready);
+	
+		for (;;) {
 			ui_loop(&data->ui);
 			vTaskDelay(LOOP_DELAY / portTICK_PERIOD_MS);
 		}
-		*/
-		while (1) {
-			Serial.println("UI");
-			vTaskDelay(1000 / portTICK_PERIOD_MS);
+	}
+
+	static void netpie_thread(void* arg) {
+		struct data* data = (struct data*)arg;
+
+		xSemaphoreTake(ui_thread_ready, portMAX_DELAY);
+		
+		netpie_init(&data->netpie, &data->light);
+
+		for (;;) {
+			netpie_loop(&data->netpie);
+			vTaskDelay(NETPIE_LOOP_DELAY / portTICK_PERIOD_MS);
 		}
 	}
 
 	void setup(struct data* data) {
-		Serial.begin(9600);
-
-		light_init(&data->light);
-		ui_init(&data->ui, &data->light);
-		//netpie_init(&data->netpie, &data->light);
-
 		// delay to make sure everything is ready
 		delay(SETUP_DELAY);
-
 		Serial.println("-- HERE TO AVOID GRABADE DATA --");
-		/*
-		xTaskCreate(
-			ui_thread,
-			"ui_thread",
-			UI_THREAD_STACK_SIZE,
-			NULL,
-			1,
-			NULL
-			);
+		
+		//netpie_init(&data->netpie, &data->light);
+
+		light_thread_ready = xSemaphoreCreateBinary();
+		ui_thread_ready = xSemaphoreCreateBinary();
 
 		xTaskCreate(
 			light_thread,
 			"light_thread",
-			UI_THREAD_STACK_SIZE,
+			LIGHT_THREAD_STACK_SIZE,
 			(void*)data,
 			1,
 			NULL
 			);
 
-		vTaskStartScheduler();
+		xTaskCreate(
+			ui_thread,
+			"ui_thread",
+			UI_THREAD_STACK_SIZE,
+			(void*)data,
+			2,
+			NULL
+			);
 
-		Serial.println(esp_get_free_heap_size());
-		*/
+		xTaskCreate(
+			netpie_thread,
+			"netpie_thread",
+			NETPIE_THREAD_STACK_SIZE,
+			(void*)data,
+			3,
+			NULL
+			);
 	}	
-
-	void loop(struct data* data) {
-		light_loop(&data->light);
-		ui_loop(&data->ui);
-		//netpie_loop(&data->netpie);
-		delay(LOOP_DELAY);
-	}
 }

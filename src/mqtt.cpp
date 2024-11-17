@@ -9,22 +9,22 @@ namespace mqtt {
 	}
 
 	void make(client_t* cli, struct info* hint) {
-		cli->wifi = WiFiClient();
-		cli->mqtt = PubSubClient(cli->wifi);
-		cli->mqtt.setServer(hint->serv, hint->port);
-		cli->mqtt.setCallback(callback);
-		cli->old_payload = "";
+		cli->wifi = new WiFiClient();
+		cli->mqtt = new PubSubClient(*cli->wifi);
+		cli->mqtt->setServer(hint->serv, hint->port);
+		cli->mqtt->setCallback(callback);
+		cli->old_payload = NULL;
 	}
 
 	bool connect(client_t* cli, struct info* hint) {
 		// do nothing if already connected
-		if (cli->mqtt.connected()) {
+		if (cli->mqtt->connected()) {
 			return true;
 		}
 
 		u16 retry = 0;
 
-		while (!cli->mqtt.connect(hint->id, hint->user, hint->pass)) {
+		while (!cli->mqtt->connect(hint->id, hint->user, hint->pass)) {
 			if (retry > MAX_RETRY) {
 				return false;
 			}
@@ -43,9 +43,9 @@ namespace mqtt {
 		while (!is_connect(cli)) {
 			loop_result = false;
 			connect(cli, hint);
-			delay(500);
+			vTaskDelay(500 / portTICK_PERIOD_MS);
 		}
-		cli->mqtt.loop();
+		cli->mqtt->loop();
 
 		return loop_result;
 	}
@@ -61,20 +61,28 @@ namespace mqtt {
 
 		for (u8 i = 0; i < count; i++) {
 			const char* topic = va_arg(topics, const char*);
-			cli->mqtt.subscribe(topic);
-			Serial.print("Sub to ");
+			cli->mqtt->subscribe(topic);
 			Serial.print(topic);
 		}
 	}
 
 	bool send(client_t* cli, const char* topic, const char* payload) {
 		// avoiding sending old payload
-		if (strcmp(payload, cli->old_payload) == 0) {
+		if (strcmp(payload, (cli->old_payload != NULL) ? cli->old_payload : "") == 0) {
 			return false;
 		}
-		cli->old_payload = payload;
+
+		u16 payload_size = strlen(payload);
+
+		if (cli->old_payload != NULL) {
+			free(cli->old_payload);
+		}
+
+		cli->old_payload = (char*)malloc(payload_size + 1);
+		memset(cli->old_payload, '\0', payload_size); 
+		memcpy(cli->old_payload, payload, payload_size);
 
 		// send and return whether send is successfully or not
-		return !cli->mqtt.publish(topic, payload);
+		return cli->mqtt->publish(topic, payload);
 	}
 }
