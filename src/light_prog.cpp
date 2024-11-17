@@ -1,4 +1,4 @@
-// TODO: Fix bug where smoothing will alway output 0
+// TODO: change how brightness work "https://forums.adafruit.com/viewtopic.php?t=41143"
 
 #include "light_prog.hpp"
 #include "ui_prog.hpp"
@@ -10,12 +10,6 @@
 #include <Arduino.h>
 
 namespace program {
-	static void set_all_color(struct light_data* light, u8 r, u8 g, u8 b) {
-		for (u8 i = 0; i < NP_COUNT; i++) {
-			np::color(light->pixels[i], r, g, b);
-		}
-	}
-
 	static void init_setting(struct light_data* light) {
 		light->settings.color = {
 			.r = DEF_NP_R,
@@ -29,6 +23,13 @@ namespace program {
 		};
 	}
 
+	static void set_all_color(struct light_data* light, u8 r, u8 g, u8 b) {
+		for (u8 i = 0; i < NP_COUNT; i++) {
+			np::color(light->pixels[i], r, g, b);
+			np::show(light->pixels[i]);
+		}
+	}
+
 	void light_init(struct light_data* light) {
 		// init ldr
 		for (u8 i = 0; i < LDR_COUNT; i++) {
@@ -38,6 +39,7 @@ namespace program {
 		// init neopixel
 		for (u8 i = 0; i < NP_COUNT; i++) {
 			np::make(light->pixels[i], NP_PINS[i], 1);
+			np::begin(light->pixels[i]);
 		}
 		set_all_color(light, DEF_NP_R, DEF_NP_G, DEF_NP_B);
 
@@ -45,23 +47,27 @@ namespace program {
 		init_setting(light);
 	}
 
-	static void set_all_brightness(
-		struct light_data* light,
-		u8 brightness
-		) {
+	static void set_brightness(struct light_data* light, u8 i, u8 brightness) {
+		// if brightness is turn down to 0 neopixel wont turn back on
+		np::brightness(light->pixels[i], min<u8, u8, u8>(1, brightness));
+		np::show(light->pixels[i]);
+	}
+
+	static void set_brightness(struct light_data* light, u8 brightness) {
 		// if brightness is turn down to 0 neopixel wont turn back on
 		brightness = min<u8, u8, u8>(1, brightness);
 
 		for (u8 i = 0; i < NP_COUNT; i++) {
 			np::brightness(light->pixels[i], brightness);
+			np::show(light->pixels[i]);
 		}
 	}
 
 	static void manual_mode_loop(struct light_data* light) {
 		if (light->settings.mode.on) {
-			set_all_brightness(light, 100);
+			set_brightness(light, 100);
 		} else {
-			set_all_brightness(light, 0);
+			set_brightness(light, 0);
 		}
 	}
 
@@ -91,12 +97,12 @@ namespace program {
 		}
 	}
 
-	// normalize all reading to be between 0 - 100
+	// normalize all reading to be between 1 - 100
 	static void reading_to_brightness(struct light_data* light) {	
 		for (u8 i = 0; i < LDR_COUNT; i++) {
 			light->brightness[i] = max<u8, u8, u8>(
-				(u8)round((f32)ldr::get_cache(&light->ldrs[i]) / (f32)RTBNF), 
-				100
+				100,
+				(u8)round((f32)ldr::get_cache(&light->ldrs[i]) / (f32)RTBNF)
 				);
 		}
 	}
@@ -139,12 +145,12 @@ namespace program {
 	}
 
 	// turn pure AO from LDR to brightness for each neopixel ranging between
-	// 0 - 100 calculation result get store in ldr cache
+	// 0 - 100 calculation result get store in brightness cahce 
 	static inline void cal_brightness(struct light_data* light) {
 		cache_ldr_reading(light);
 		//smooth_reading(light);
 		reading_to_brightness(light);
-		propagate_brightness(light);
+		//propagate_brightness(light);
 	}
 
 	// inline because I want this to be very fast
@@ -152,13 +158,16 @@ namespace program {
 		cal_brightness(light);
 
 		for (u8 i = 0; i < NP_COUNT; i++) {
-			Serial.print("brightness: ");
-			//Serial.println(light->brightness[i]);
-			//Serial.print("reading: ");
-			//Serial.println(ldr::get_cache(&light->ldrs[i]));
-
-			np::brightness(light->pixels[i], light->brightness[i]);
+			set_brightness(light, i, light->brightness[i]);
 		}
+
+		// reset the color because set_brightness is lossy
+		set_all_color(
+			light,
+			light->settings.color.r,
+			light->settings.color.g,
+			light->settings.color.b
+			);
 	}
 
 	void light_loop(struct light_data* light) {

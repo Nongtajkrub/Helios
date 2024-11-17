@@ -8,24 +8,27 @@
 namespace np {
 	typedef Adafruit_NeoPixel pixel_t;
 
-	inline void make(pixel_t& pixel, u8 pin, u16 count) {
-		pixel = pixel_t(count, pin);
-		pixel.begin();
+	inline void make(pixel_t*& pixel, u8 pin, u8 count) {
+		pixel = new Adafruit_NeoPixel(count, pin);
 	}
 
-	inline void color(pixel_t& pixel, u8 r, u8 g, u8 b) {
-		pixel.fill(pixel.Color(r, g, b));
+	inline void begin(pixel_t* pixel) {
+		pixel->begin();
 	}
 
-	inline void color(pixel_t& pixel, u16 i, u8 r, u8 g, u8 b) {
-		pixel.setPixelColor(i, r, g, b);
+	inline void color(pixel_t* pixel, u8 r, u8 g, u8 b) {
+		pixel->fill(pixel->Color(r, g, b));
 	}
 
-	inline void brightness(pixel_t& pixel, u8 brightness) {
-		pixel.setBrightness(brightness);
+	inline void color(pixel_t* pixel, u16 i, u8 r, u8 g, u8 b) {
+		pixel->setPixelColor(i, r, g, b);
 	}
 
-	inline void show(pixel_t& pixel) {
-		pixel.show();
+	inline void brightness(pixel_t* pixel, u8 brightness) {
+		pixel->setBrightness(brightness);
+	}
+
+	inline void show(pixel_t* pixel) {
+		pixel->show();
 	}
 }

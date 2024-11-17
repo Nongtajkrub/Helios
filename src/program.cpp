@@ -42,12 +42,16 @@ namespace program {
 	}
 
 	void setup(struct data* data) {
+		Serial.begin(9600);
+
 		light_init(&data->light);
 		ui_init(&data->ui, &data->light);
-		netpie_init(&data->netpie, &data->light);
+		//netpie_init(&data->netpie, &data->light);
 
 		// delay to make sure everything is ready
 		delay(SETUP_DELAY);
+
+		Serial.println("-- HERE TO AVOID GRABADE DATA --");
 		/*
 		xTaskCreate(
 			ui_thread,
@@ -74,9 +78,9 @@ namespace program {
 	}	
 
 	void loop(struct data* data) {
-		//light_loop(&data->light);
+		light_loop(&data->light);
 		//ui_loop(&data->ui);
-		netpie_loop(&data->netpie);
+		//netpie_loop(&data->netpie);
 		delay(LOOP_DELAY);
 	}
 }
