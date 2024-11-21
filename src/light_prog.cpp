@@ -1,7 +1,6 @@
-// TODO: change how brightness work "https://forums.adafruit.com/viewtopic.php?t=41143"
-
 #include "light_prog.hpp"
 #include "ui_prog.hpp"
+#include "ldr.hpp"
 
 #define GET_DEBUG_SETTINGS 
 #define GET_LIGHT_SETTINGS
@@ -123,13 +122,7 @@ namespace program {
 	#endif // #if NP_COUNT != 1
 
 		for (u8 i = 0; i < NP_COUNT; i++) {
-			u8 brightness = light->brightness[i];
-
-			if (brightness < NBCOT) {
-				set_brightness(light, i, 1);
-				continue;
-			}
-			set_brightness(light, i, brightness);
+			set_brightness(light, i, light->brightness[i]);
 		}
 	}
 

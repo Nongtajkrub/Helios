@@ -6,6 +6,7 @@
 #include "settings.hpp"
 
 #include <Arduino.h>
+#include <WiFi.h>
 
 namespace program {
 	static SemaphoreHandle_t light_thread_ready;
@@ -78,13 +79,16 @@ namespace program {
 			NULL
 			);
 
-		xTaskCreate(
-			netpie_thread,
-			"netpie_thread",
-			NETPIE_THREAD_STACK_SIZE,
-			(void*)data,
-			3,
-			NULL
-			);
+		// only start netpie if wifi is connected
+		if (WiFi.status() == WL_CONNECTED) {
+			xTaskCreate(
+				netpie_thread,
+				"netpie_thread",
+				NETPIE_THREAD_STACK_SIZE,
+				(void*)data,
+				3,
+				NULL
+				);
+		}
 	}	
 }

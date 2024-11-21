@@ -1,6 +1,6 @@
 #pragma once
 
-#include "electronics.hpp"
+#include "neopixel.hpp"
 
 #define GET_GLOBAL_SETTINGS
 #include "settings.hpp"

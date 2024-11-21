@@ -25,7 +25,7 @@ namespace mqtt {
 
 	void make(client_t* cli, struct info* hint);
 
-	bool connect(client_t* cli, struct info* hint);
+	void connect(client_t* cli, struct info* hint);
 
 	bool loop(client_t* cli, struct info* hint);
 

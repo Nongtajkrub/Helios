@@ -1,4 +1,4 @@
-#define GET_GLOBAL_SETTINGS
+#define GET_GLOBAL_SETTINGT
 #include "settings.hpp"
 
 // hidden.hpp is hide by gitignore to create pls check the example in README
@@ -21,6 +21,7 @@ namespace program {
 	void netpie_init(struct netpie_data* netpie,struct light_data* light) {
 		init_hint(netpie);
 
+		// this will block until able to connect
 		mqtt::make(&netpie->client, &netpie->serv_hint);
 		mqtt::connect(&netpie->client, &netpie->serv_hint);
 		mqtt::sub(&netpie->client, SUB_COUNT, SUB_TOPICS);
@@ -42,17 +43,16 @@ namespace program {
 			average_brightness
 			);
 
-		if (!mqtt::send(&netpie->client, UPDATE_SHADOW_TOPIC, msg)) {
-			// TODO: Handle error
-		}
+		mqtt::send(&netpie->client, UPDATE_SHADOW_TOPIC, msg);
 	}
 
 	void netpie_loop(struct netpie_data* netpie) {
-		netpie_update_brightness(netpie);
-
-		// if disconnect reconnect and resub all sub
+		// if disconnected reconnect and resub all sub
+		// this will block until able to reconnect
 		if (!mqtt::loop(&netpie->client, &netpie->serv_hint)) {
 			mqtt::sub(&netpie->client, SUB_COUNT, SUB_TOPICS);
 		}
+
+		netpie_update_brightness(netpie);
 	}
 }

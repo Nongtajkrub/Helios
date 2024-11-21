@@ -1,7 +1,5 @@
 #include "mqtt.hpp"
 
-#define MAX_RETRY 10
-
 namespace mqtt {
 	static void callback(char* topic, byte* payload, uint len) {
 		Serial.println("Msg recv topic: ");
@@ -16,38 +14,28 @@ namespace mqtt {
 		cli->old_payload = NULL;
 	}
 
-	bool connect(client_t* cli, struct info* hint) {
+	void connect(client_t* cli, struct info* hint) {
 		// do nothing if already connected
 		if (cli->mqtt->connected()) {
-			return true;
+			return;
 		}
-
-		u16 retry = 0;
 
 		while (!cli->mqtt->connect(hint->id, hint->user, hint->pass)) {
-			if (retry > MAX_RETRY) {
-				return false;
-			}
-
-			retry++;
+			vTaskDelay(1000 / portTICK_PERIOD_MS);
 		}
-
-		// if reach here mean connected successfully
-		return true;
 	}
 
-	// TODO: handle disconnect
 	bool loop(client_t* cli, struct info* hint) {
-		bool loop_result= true;
-
-		while (!is_connect(cli)) {
-			loop_result = false;
+		// if got disconnect try and reconnect
+		if (!is_connect(cli)) {
 			connect(cli, hint);
-			vTaskDelay(500 / portTICK_PERIOD_MS);
+			cli->mqtt->loop();
+
+			return false;
 		}
 		cli->mqtt->loop();
 
-		return loop_result;
+		return true;
 	}
 
 	// va_arg is topics
@@ -62,7 +50,6 @@ namespace mqtt {
 		for (u8 i = 0; i < count; i++) {
 			const char* topic = va_arg(topics, const char*);
 			cli->mqtt->subscribe(topic);
-			Serial.print(topic);
 		}
 	}
 

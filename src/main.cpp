@@ -8,22 +8,23 @@
 #include "hidden.hpp"
 
 static void connect_wifi() {
-	Serial.println("Connecting to Wifi");
+	Serial.println("Connecting to WiFi");
 	WiFi.begin(WIFI_SSID, WIFI_PASS);
 	u8 attempt = 0;
 	
 	while (WiFi.status() != WL_CONNECTED) {
 		if (attempt >= 10) {
-			Serial.println("Fail to connect to Wifi!");
+			Serial.println("Fail to connect to WiFi");
+			return;
 		}
 
 		attempt++;
-		Serial.print(".");
+		Serial.print("Attempt: ");
+		Serial.println(attempt);
 		delay(1000);
 	}
 
-	Serial.println();
-	Serial.println("Connected to Wifi");
+	Serial.println("Successfully connected to WiFi!");
 }
 
 struct program::data program_data;

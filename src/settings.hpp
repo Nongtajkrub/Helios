@@ -33,10 +33,6 @@
 
 	#define LDR_MAX_ADC 4096
 
-	// NBCOT - NEOPIXEL_BRIGHTNESS_CUT_OUT_THRESHOLD
-	// neopixel when cut out when brightness is to low to avoid flickering
-	#define NBCOT 5
-
 	// RNF - READING_TO_BRIGHTNESS_NORMALIZATION_FACTOR
 	#define RTBNF ((float)(LDR_MAX_ADC) / 100.0f)
 
@@ -54,7 +50,7 @@
 
 #ifdef GET_MAIN_SETTINGS
 	#define SETUP_DELAY 3000
-	#define LOOP_DELAY 10
+	#define LOOP_DELAY 50
 	#define NETPIE_LOOP_DELAY 5000
 
 	#define UI_THREAD_STACK_SIZE 1536  
