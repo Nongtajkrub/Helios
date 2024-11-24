@@ -10,7 +10,8 @@
 	#define DOWN_BUTT_PIN 14
 	#define SELC_BUTT_PIN 26
 
-	#define BACK_UI_CHAR "<"
+	#define BACK_INDICATOR "<"
+	#define NOT_MANU_ERR_MSG "Enter manual mode first"
 #endif // #ifdef GET_UI_SETTING
 
 // light settings

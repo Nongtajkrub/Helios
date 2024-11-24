@@ -1,5 +1,6 @@
 #include "ui.hpp"
 #include <stdlib.h>
+#include <math.h>
 
 #define SELC_INDICATOR ">"
 
@@ -12,9 +13,25 @@ namespace ui {
 		screen->backlight();
 	}
 
-	static void show(I2C* screen, const char* text, u8 x, u8 y) {
+	void show(I2C* screen, const char* text, u8 x, u8 y) {
 		screen->setCursor(x, y);
 		screen->print(text);
+	}
+
+	void show(I2C* screen, const char* text, u8 x, u8 y, u8 lcd_cols, u8 wrap) {
+		u8 len = strlen(text);
+
+		for (u8 i = 0; i < len; i++) {
+			// wrap if need to
+			if (x >= lcd_cols && wrap != NO_WRAP) {
+				x = 0;
+				y++;
+			}
+
+			screen->setCursor(x, y);
+			screen->print(text[i]);
+			x++;
+		}
 	}
 
 	/* --------------- SELETOR ---------------*/
@@ -37,17 +54,19 @@ namespace ui {
 		}
 	}
 
-	static void selc_down(selector_t* selc, u8 limit) {
-		if (selc->on < limit) {
+	static void selc_down(selector_t* selc, u8 max) {
+		if (selc->on < max) {
 			selc->on++;
 		}
 	}
 
-	static void selc_up_down_control_loop(selector_t* selc, u8 down_limit) {
+	static void selc_up_down_control_loop(selector_t* selc, u8 down_max, event_t* e) {
 		if (selc->up_trig(selc->arg)) {
 			selc_up(selc);
+			*e = SELC_UP;
 		} else if (selc->down_trig(selc->arg)) {
-			selc_down(selc, down_limit);
+			selc_down(selc, down_max);
+			*e = SELC_DOWN;
 		}
 	}
 
@@ -71,6 +90,7 @@ namespace ui {
 		const char* header,
 		I2C* screen,
 		selector_t* selc,
+		event_t* e,
 		int num, ...
 		) {
 		va_list opts;
@@ -81,6 +101,7 @@ namespace ui {
 		opt_init_opts(opt, &opts);
 
 		opt->selc = selc;
+		opt->e = e;
 
 		opt->screen = screen;
 	}
@@ -111,10 +132,13 @@ namespace ui {
 	}
 
 	void opt_loop(opt_t* opt) {
-		selc_up_down_control_loop(opt->selc, opt->num - 1);
+		selc_up_down_control_loop(opt->selc, opt->num - 1, opt->e);
 
 		if (opt->selc->selc_trig(opt->selc->arg)) {
 			opt_handle_selc(opt);
+			*opt->e = SELC;
 		}
+
+		Serial.println(*opt->e);
 	}
 }

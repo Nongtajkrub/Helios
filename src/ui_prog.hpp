@@ -61,6 +61,8 @@ namespace program {
 		button::butt_t selc_button;
 		ui::selector_t selc;
 
+		ui::event_t e;
+
 		// menus
 		struct ui_main_menu main_menu;
 
