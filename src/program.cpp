@@ -54,9 +54,7 @@ namespace program {
 	void setup(struct data* data) {
 		// delay to make sure everything is ready
 		delay(SETUP_DELAY);
-		Serial.println("-- HERE TO AVOID GRABADE DATA --");
-		
-		//netpie_init(&data->netpie, &data->light);
+		//Serial.println("-- HERE TO AVOID GRABADE DATA --");
 
 		light_thread_ready = xSemaphoreCreateBinary();
 		ui_thread_ready = xSemaphoreCreateBinary();

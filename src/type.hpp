@@ -2,6 +2,9 @@
 
 #include <Arduino.h>
 
+typedef void (func)(void*);
+typedef bool (funcb)(void*);
+
 typedef uint64_t u64;
 typedef uint32_t u32;
 typedef uint16_t u16;

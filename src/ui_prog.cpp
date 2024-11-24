@@ -1,285 +1,188 @@
-/*
- * This UI system is design so bad I think a horse was shove up my a** 
- * while I was writing it. If this is still here I forgot to delete it.
-*/
-
 #include "ui_prog.hpp"
 #include "light_prog.hpp"
 
-#define GET_UI_SETTINGS 
+#define GET_UI_SETTINGS
 #include "settings.hpp"
 
-#define MENU_GROUP(MENU, COUNT, ...)                                          \
+#define OPT_MAKE(MENU, HEADER, NUM, ...)                                      \
 	do {                                                                      \
-		ui::group(                                                            \
-			&(MENU).group,                                                    \
-			ui->lcd,                                                          \
-			LCD_ROWS,                                                         \
-			LCD_COLS,                                                         \
-			(COUNT),                                                          \
-			__VA_ARGS__                                                       \
-			);                                                                \
-	} while (0)
-
-#define DEF_MENU_LOOP(MENU)                                                   \
-	do {                                                                      \
-		if (ui->update) {                                                     \
-			ui::show(&(MENU).group);                                          \
-			ui->update = false;                                               \
-		}                                                                     \
-		                                                                      \
-		control_loop(ui, &(MENU).group);                                      \
+		ui::opt_make(MENU, HEADER, &screen, &ui->selc, NUM, __VA_ARGS__);     \
 	} while (0) 
 
-#define NOT_MANU_ERR_MSG "Enter manual mode first"
+#define MAKE_CH_MENU_TRIG(NAME, MENU)                                         \
+	static inline void (NAME)(void* arg) {                                    \
+		struct ui_data* ui = (struct ui_data*)arg;                            \
+                                                                              \
+		ui->on_menu = MENU;                                                   \
+	}                                                                         \
+
+#define BACK_INDICATOR "<"
 
 namespace program {
+	static I2C screen(LCD_ADDR, LCD_COLS, LCD_ROWS);
+
+	MAKE_CH_MENU_TRIG(handle_setting_selc, SETTING);
+	MAKE_CH_MENU_TRIG(handle_quickact_selc, QUICKACT);
+
 	static void init_main_menu(struct ui_data* ui) {
-		ui::make(&ui->main.header_txt, "Welcome!", ui::TXT);
-		ui::make(&ui->main.setting_opt, "Settings", ui::OPT);
-		ui::make(&ui->main.quickact_opt, "QuickAct", ui::OPT);
-		MENU_GROUP(
-			ui->main,
-			3,
-			&ui->main.header_txt,
-			&ui->main.setting_opt,
-			&ui->main.quickact_opt
-			);
+		struct ui_main_menu* menu = &ui->main_menu;
+
+		ui::opt_elem_make(&menu->setting, "Settings", handle_setting_selc, ui);
+		ui::opt_elem_make(&menu->quickact, "Quickact", handle_quickact_selc, ui);
+
+		OPT_MAKE(&menu->opt, "Main", 2, &menu->setting, &menu->quickact);
 	}
+
+	static void handle_back_selc(void* arg) {
+		struct ui_data* ui = (struct ui_data*)arg;
+
+		switch (ui->on_menu) {
+		case SETTING:
+			ui->on_menu = MAIN;
+			break;
+		case MODE:
+			ui->on_menu = SETTING;
+			break;
+		case QUICKACT:
+			ui->on_menu = MAIN;
+			break;
+		case TOGGLE:
+			ui->on_menu = QUICKACT;
+			break;
+		default:
+			break;
+		}
+	}
+
+	MAKE_CH_MENU_TRIG(handle_mode_selc, MODE);
+	MAKE_CH_MENU_TRIG(handle_setting_back_selc, MAIN);
 
 	static void init_setting_menu(struct ui_data* ui) {
-		ui::make(&ui->setting.header_txt, "Settings", ui::TXT);
-		ui::make(&ui->setting.mode_opt, "mode", ui::OPT);
-		ui::make(&ui->setting.back_opt, BACK_UI_CHAR, ui::OPT);
-		MENU_GROUP(
-			ui->setting,
-			3,
-			&ui->setting.header_txt,
-			&ui->setting.mode_opt,
-			&ui->setting.back_opt
-			);
+		struct ui_setting_menu* menu = &ui->setting_menu;
+
+		ui::opt_elem_make(&menu->mode, "Mode", handle_mode_selc, ui);
+		ui::opt_elem_make(&menu->back, BACK_INDICATOR, handle_back_selc, ui);
+
+		OPT_MAKE(&menu->opt, "Settings", 2, &menu->mode, &menu->back);
 	}
 
-	static void init_setting_mode_menu(struct ui_data* ui) {
-		ui::make(&ui->setting_mode.header_txt, "Mode", ui::TXT);
-		ui::make(&ui->setting_mode.auto_opt, "auto", ui::OPT);
-		ui::make(&ui->setting_mode.manu_opt, "manual", ui::OPT);
-		ui::make(&ui->setting_mode.back_opt, BACK_UI_CHAR, ui::OPT);
-		MENU_GROUP(
-			ui->setting_mode,
-			4,
-			&ui->setting_mode.header_txt,
-			&ui->setting_mode.auto_opt,
-			&ui->setting_mode.manu_opt,
-			&ui->setting_mode.back_opt
-			);
+	static inline void handle_auto_selc(void* arg) {
+		struct ui_data* ui = (struct ui_data*)arg;
+
+		light_set_mode_manu(ui->light, false);
 	}
+
+	static inline void handle_manual_selc(void* arg) {
+		struct ui_data* ui = (struct ui_data*)arg;
+
+		light_set_mode_manu(ui->light, true);
+	}
+
+	static void init_mode_menu(struct ui_data* ui) {
+		struct ui_mode_menu* menu = &ui->mode_menu;
+
+		ui::opt_elem_make(&menu->_auto, "Auto", handle_auto_selc, ui);
+		ui::opt_elem_make(&menu->manual, "Manual", handle_manual_selc, ui);
+		ui::opt_elem_make(&menu->back, BACK_INDICATOR, handle_back_selc, ui);
+
+		OPT_MAKE(&menu->opt, "Mode", 3, &menu->_auto, &menu->manual, &menu->back);
+	}
+
+	MAKE_CH_MENU_TRIG(handle_toggle_selc, TOGGLE);
 
 	static void init_quickact_menu(struct ui_data* ui) {
-		ui::make(&ui->quickact.header_txt, "Quick Action", ui::TXT);
-		ui::make(&ui->quickact.toggle_opt, "toggle", ui::OPT);
-		ui::make(&ui->quickact.back_opt, BACK_UI_CHAR, ui::OPT);
-		MENU_GROUP(
-			ui->quickact,
-			3,
-			&ui->quickact.header_txt,
-			&ui->quickact.toggle_opt,
-			&ui->quickact.back_opt
-			);
+		struct ui_quickact_menu* menu = &ui->quickact_menu;
+
+		ui::opt_elem_make(&menu->toggle, "Toggle", handle_toggle_selc, ui);
+		ui::opt_elem_make(&menu->back, BACK_INDICATOR, handle_back_selc, ui);
+
+		OPT_MAKE(&menu->opt, "Quickact", 2, &menu->toggle, &menu->back);
 	}
 
-	static void init_quickact_toggle_menu(struct ui_data* ui) {
-		ui::make(&ui->quickact_toggle.header_txt, "Toggle", ui::TXT);
-		ui::make(&ui->quickact_toggle.on_opt, "on", ui::OPT);
-		ui::make(&ui->quickact_toggle.off_opt, "off", ui::OPT);
-		ui::make(&ui->quickact_toggle.back_opt, BACK_UI_CHAR, ui::OPT);
-		MENU_GROUP(
-			ui->quickact_toggle,
-			4,
-			&ui->quickact_toggle.header_txt, 
-			&ui->quickact_toggle.on_opt, 
-			&ui->quickact_toggle.off_opt,
-			&ui->quickact_toggle.back_opt
-			);
+	static inline void handle_on_selc(void* arg) {
+		struct ui_data* ui = (struct ui_data*)arg;
+
+		light_set_on(ui->light, true);
 	}
 
-	static void init_button(struct ui_data* ui) {
+	static inline void handle_off_selc(void* arg) {
+		struct ui_data* ui = (struct ui_data*)arg;
+
+		light_set_on(ui->light, false);
+	}
+
+	static void init_toggle_menu(struct ui_data* ui) {
+		struct ui_toggle_menu* menu = &ui->toggle_menu;
+
+		ui::opt_elem_make(&menu->on, "On", handle_on_selc, ui);
+		ui::opt_elem_make(&menu->off, "off", handle_off_selc, ui);
+		ui::opt_elem_make(&menu->back, BACK_INDICATOR, handle_back_selc, ui);
+
+		OPT_MAKE(&menu->opt, "Toggle", 3, &menu->on, &menu->off, &menu->back);
+	}
+
+	static bool up_trig(void* arg) {
+		struct ui_data* ui = (struct ui_data*)arg;
+
+		return button::state(&ui->up_button);
+	}
+
+	static bool down_trig(void* arg) {
+		struct ui_data* ui = (struct ui_data*)arg;
+
+		return button::state(&ui->down_button);
+	}
+
+	static bool selc_trig(void* arg) {
+		struct ui_data* ui = (struct ui_data*)arg;
+
+		return button::state(&ui->selc_button);
+	}
+
+	static void init_control(struct ui_data* ui) {
 		button::make(&ui->up_button, UP_BUTT_PIN);
 		button::make(&ui->down_button, DOWN_BUTT_PIN);
-		button::make(&ui->sel_button, SEL_BUTT_PIN);
+		button::make(&ui->selc_button, SELC_BUTT_PIN);
+		ui::selector_make(&ui->selc, up_trig, down_trig, selc_trig, ui);
 	}
 
 	void ui_init(struct ui_data* ui, struct light_data* light) {
 		ui->on_menu = MAIN;
+		ui->update = false;
 
-		// init lcd
-		ui->lcd = new I2C(LCD_ADDR, LCD_COLS, LCD_ROWS);
-		ui->lcd->init();
-
-		ui->light = light;
-
+		ui::ready_screen(&screen);
 		init_main_menu(ui);
 		init_setting_menu(ui);
-		init_setting_mode_menu(ui);
-		init_quickact_menu(ui);
-		init_quickact_toggle_menu(ui);
-		ui::show(&ui->main.group);
+		init_mode_menu(ui);
 
-		init_button(ui);
-	}
+		init_control(ui);
 
-	static void control_main_handle_sel(
-		struct ui_data* ui,
-		ui::group_t* group
-		) {
-		switch (ui::selector_on(group).id) {
-		case 0: // header_txt
-			break;
-		case 1: // setting_opt
-			ui->on_menu = SETTING;
-			break;
-		case 2: // quickact_opt:
-			ui->on_menu = QUICK_ACT;	
-			break;
-		}
-	}
-
-	static void control_setting_handle_sel(
-		struct ui_data* ui,
-		ui::group_t* group
-		) {
-		switch (ui::selector_on(group).id) {
-		case 0: // header_txt
-			break;
-		case 1: // mode_opt
-			ui->on_menu = MODE_SETTING;
-			break;
-		case 2: // back_opt
-			ui->on_menu = MAIN;
-			break;
-		}
-	}
-
-	static void control_setting_mode_handle_sel(
-		struct ui_data* ui,
-		ui::group_t* group
-		) {
-		switch (ui::selector_on(group).id) {
-		case 0: // header_txt
-			break;
-		case 1: // auto_opt
-			light_set_mode_manu(ui->light, false);
-			break;
-		case 2: // manu_opt
-			light_set_mode_manu(ui->light, true);
-			break;
-		case 3: // back_opt
-			ui->on_menu = SETTING;
-			break;
-		}
-	}
-
-	static void control_quickact_handle_sel(
-		struct ui_data* ui,
-		ui::group_t* group
-		) {
-		switch (ui::selector_on(group).id) {
-		case 0: // header_txt
-			break;
-		case 1: // toggle
-			ui->on_menu = TOGGLE_QUICKACT;
-			break;
-		case 2: // back_opt
-			ui->on_menu = MAIN;
-			break;
-		}
-	}
-
-	static void control_quickact_toggle_handle_sel(
-		struct ui_data* ui,
-		ui::group_t* group
-		) {
-		switch (ui::selector_on(group).id) {
-		case 0: // header_txt
-			break;
-		case 1: // on_opt
-			light_set_on(ui->light, true);
-			break;
-		case 2: // off_opt
-			light_set_on(ui->light, false);
-			break;
-		case 3: // back_opt
-			ui->on_menu = QUICK_ACT;
-		}
-	}
-
-	static void control_handle_sel(struct ui_data* ui, ui::group_t* group) {
-		switch (ui->on_menu) {
-		case MAIN:
-			control_main_handle_sel(ui, group);
-			break;
-		case SETTING:
-			control_setting_handle_sel(ui, group);
-			break;
-		case MODE_SETTING:
-			control_setting_mode_handle_sel(ui, group);
-			break;
-		case QUICK_ACT:
-			control_quickact_handle_sel(ui, group);
-			break;
-		case TOGGLE_QUICKACT:
-			control_quickact_toggle_handle_sel(ui, group);
-			break;
-		}
-	}
-
-	static void control_loop(struct ui_data* ui, ui::group_t* group) {
-		if (button::state(&ui->up_button)) {
-			ui::selector_up(group);
-			ui->update = true;
-		} else if (button::state(&ui->down_button)) {
-			ui::selector_down(group);
-			ui->update = true;
-		} else if (button::state(&ui->sel_button)) {
-			control_handle_sel(ui, group);
-			ui->update = true;
-		}
-	}
-
-	// quickact toggle menu only work in manual mode
-	static bool quickact_can_access(struct ui_data* ui) {
-		// show error and go back to main menu if not in manual mode
-		if (!light_is_manu(ui->light)) {
-			ui::show(NOT_MANU_ERR_MSG, ui->lcd, 0, 0, LCD_COLS);
-
-			// delay 3 seconds
-			vTaskDelay(3000 / portTICK_PERIOD_MS);
-			ui->on_menu = MAIN;
-			return false;
-		}
-
-		return true;
+		ui->light = light;
 	}
 
 	void ui_loop(struct ui_data* ui) {
 		switch (ui->on_menu) {
 		case MAIN:
-			DEF_MENU_LOOP(ui->main);
+			ui::opt_show(&ui->main_menu.opt);
+			ui::opt_loop(&ui->main_menu.opt);
 			break;
 		case SETTING:
-			DEF_MENU_LOOP(ui->setting);
+			ui::opt_show(&ui->setting_menu.opt);
+			ui::opt_loop(&ui->setting_menu.opt);
 			break;
-		case MODE_SETTING:
-			DEF_MENU_LOOP(ui->setting_mode);
+		case MODE:
+			ui::opt_show(&ui->mode_menu.opt);
+			ui::opt_loop(&ui->mode_menu.opt);
 			break;
-		case QUICK_ACT:
-			// quickact can only be access in manual mode
-			if (quickact_can_access(ui)) {
-				DEF_MENU_LOOP(ui->quickact);
-			}
+		case QUICKACT:
+			ui::opt_show(&ui->quickact_menu.opt);
+			ui::opt_loop(&ui->quickact_menu.opt);
 			break;
-		case TOGGLE_QUICKACT:
-			DEF_MENU_LOOP(ui->quickact_toggle);
+		case TOGGLE:
+			ui::opt_show(&ui->toggle_menu.opt);
+			ui::opt_loop(&ui->toggle_menu.opt);
+			break;
+		default:
 			break;
 		}
 	}
