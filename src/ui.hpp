@@ -38,13 +38,8 @@ typedef struct {
 	void* arg;
 } selector_t;
 
-void selector_make(
-	selector_t* selc,
-	funcb* up_trig,
-	funcb* down_trig,
-	funcb* selc_trig,
-	void* arg
-	);
+void selector_make(selector_t* selc,
+		funcb* up_trig, funcb* down_trig, funcb* selc_trig, void* arg);
 
 inline u16 selc_on(selector_t* selc) {
 	return selc->on;
@@ -76,15 +71,8 @@ typedef struct {
 	u8 rows;
 } opt_t;
 
-void opt_make(
-	opt_t* opt,
-	const char* header,
-	I2C* screen,
-	u8 rows,
-	selector_t* selc,
-	event_t* e,
-	int num, ...
-	);
+void opt_make(opt_t* opt, const char* header,
+		I2C* screen, u8 rows, selector_t* selc, event_t* e, int num, ...);
 void opt_loop(opt_t* opt);
 void opt_show(opt_t* opt);
 
@@ -101,16 +89,8 @@ typedef struct {
 	I2C* screen;
 } num_t;
 
-void num_make(
-	num_t* num,
-	const char* header,
-	u16 begin,
-	u16 end,
-	u8 rows,
-	selector_t* selc,
-	event_t* e,
-	I2C* screen
-	);
+void num_make(num_t* num, const char* header,
+		u16 begin, u16 end, u8 rows, selector_t* selc, event_t* e, I2C* screen);
 
 void num_show(num_t* num);
 bool num_loop(num_t* num);

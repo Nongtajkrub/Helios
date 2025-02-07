@@ -36,13 +36,9 @@ void show(I2C* screen, const char* text, u8 x, u8 y, u8 lcd_cols, u8 wrap) {
 }
 
 /* --------------- SELETOR ---------------*/
-void selector_make(
-	selector_t* selc,
-	funcb* up_trig,
-	funcb* down_trig,
-	funcb* selc_trig,
-	void* arg
-	) {
+void selector_make(selector_t* selc,
+		funcb* up_trig, funcb* down_trig, funcb* selc_trig, void* arg)
+{
 	selc->up_trig = up_trig;
 	selc->down_trig = down_trig;
 	selc->selc_trig = selc_trig;
@@ -86,15 +82,9 @@ static void opt_init_opts(opt_t* opt, va_list* opts) {
 	}
 }
 
-void opt_make(
-	opt_t* opt,
-	const char* header,
-	I2C* screen,
-	u8 rows,
-	selector_t* selc,
-	event_t* e,
-	int num, ...
-	) {
+void opt_make(opt_t* opt, const char* header,
+		I2C* screen, u8 rows, selector_t* selc, event_t* e, int num, ...)
+{
 	va_list opts;
 	va_start(opts, num);
 
@@ -152,16 +142,9 @@ void opt_loop(opt_t* opt) {
 }
 
 /* ---- UI NUMBER SELECTOR TYPE ---- */
-void num_make(
-	num_t* num,
-	const char* header,
-	u16 begin,
-	u16 end,
-	u8 rows,
-	selector_t* selc,
-	event_t* e,
-	I2C* screen
-	) {
+void num_make(num_t* num, const char* header,
+		u16 begin, u16 end, u8 rows, selector_t* selc, event_t* e, I2C* screen)
+{
 	num->header = header;
 	num->begin = begin;
 	num->end = end;
