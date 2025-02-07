@@ -1,16 +1,10 @@
 #include "mqtt.hpp"
 
 namespace mqtt {
-static void callback(char* topic, byte* payload, uint len) {
-	Serial.println("Msg recv topic: ");
-	Serial.println(topic);
-}
-
 void make(client_t* cli, struct info* hint) {
 	cli->wifi = new WiFiClient();
 	cli->mqtt = new PubSubClient(*cli->wifi);
 	cli->mqtt->setServer(hint->serv, hint->port);
-	cli->mqtt->setCallback(callback);
 	cli->old_payload = NULL;
 }
 

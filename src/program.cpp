@@ -1,5 +1,3 @@
-// TODO: make multithreading work
-
 #include "program.hpp"
 
 #define GET_MAIN_SETTINGS
@@ -54,7 +52,7 @@ static void netpie_thread(void* arg) {
 void setup(struct data* data) {
 	// delay to make sure everything is ready
 	delay(SETUP_DELAY);
-	Serial.println("-- HERE TO AVOID GRABADE DATA --");
+	Serial.println("Here to avoid garbage data");
 
 	light_thread_ready = xSemaphoreCreateBinary();
 	ui_thread_ready = xSemaphoreCreateBinary();

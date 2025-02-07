@@ -106,23 +106,34 @@ void opt_make(
 	opt->e = e;
 
 	opt->screen = screen;
+	opt->rows = rows;
 }
 
+// DO NOT CHANGE STUFF USE FOR SCROLLING
 void opt_show(opt_t* opt) {
+	u8 y = 0;
+	u8 start = 0;
+
+	if (selc_on(opt->selc) > (opt->rows - 2)) {
+		start = selc_on(opt->selc) - (opt->rows - 2);
+	}
+
 	opt->screen->clear();
 	show<const char*>(opt->screen, opt->header, 0, 0);
+	y++;
 
 	// show options
-	for (u8 i = 0; i < opt->num; i++) {
+	for (u8 i = start; i < opt->num && i < (start + (opt->rows - 1)); i++) {
 		// i + 1 to not overide header
 		if (i == opt->selc->on) {
 			// print the selector indicator first than the option label 
-			show<const char*>(opt->screen, SELC_INDICATOR, 0, i);
-			show<const char*>(opt->screen, opt->opts[i]->lable, 1, i);
+			show<const char*>(opt->screen, SELC_INDICATOR, 0, y);
+			show<const char*>(opt->screen, opt->opts[i]->lable, 1, y);
 		} else {
 			// just print the option label 
-			show<const char*>(opt->screen, opt->opts[i]->lable, 0, i);
+			show<const char*>(opt->screen, opt->opts[i]->lable, 0, y);
 		}
+		y++;
 	}
 }
 

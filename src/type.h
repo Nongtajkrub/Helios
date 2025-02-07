@@ -1,9 +1,7 @@
 #pragma once
 
-#include <Arduino.h>
-
-typedef void (func)(void*);
-typedef bool (funcb)(void*);
+#include <stdint.h>
+#include <stdbool.h>
 
 typedef uint64_t u64;
 typedef uint32_t u32;
@@ -19,4 +17,7 @@ typedef float f32;
 
 typedef unsigned int uint;
 
-constexpr u16 PTR_SIZE = sizeof(void*);
+const u16 PTR_SIZE = sizeof(void*);
+
+typedef void (func)(void*);
+typedef bool (funcb)(void*);

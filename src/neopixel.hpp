@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "type.hpp"
+#include "type.h"
 #include <Adafruit_NeoPixel.h>
 
 namespace np {

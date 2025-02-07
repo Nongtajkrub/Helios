@@ -1,5 +1,3 @@
-// no pragma once just have to be careful
-
 // ui settings
 #ifdef GET_UI_SETTINGS
 	#define LCD_ADDR 0x27
@@ -23,8 +21,8 @@
 		#define LDR_COUNT NP_COUNT
 	#endif // #ifndef GET_GLOBAL_SETTINGS
 
-	constexpr u8 LDR_PINS[] = {32, 34, 33, 35};
-	constexpr u8 NP_PINS[] = {18, 17, 19, 15};
+	constexpr u8 LDR_PINS[] = {32, 35, 34, 33};
+	constexpr u8 NP_PINS[] = {15, 18, 19, 17};
 
 	#define NP_ROWS 2
 	#define NP_COLS 2
@@ -45,14 +43,14 @@
 	#define DEF_MSG_SIZE 256
 	#define UPDATE_SHADOW_TOPIC "@shadow/data/update"
 
-	#define SUB_TOPICS "@msg/action"
+	#define SUB_TOPICS "@msg/operator"
 	#define SUB_COUNT 1
 #endif // #ifdef GET_NETPIE_SETTINGS
 
 #ifdef GET_MAIN_SETTINGS
 	#define SETUP_DELAY 3000
 	#define LOOP_DELAY 50
-	#define NETPIE_LOOP_DELAY 5000
+	#define NETPIE_LOOP_DELAY 2500
 
 	#define UI_THREAD_STACK_SIZE 1536  
 	#define LIGHT_THREAD_STACK_SIZE 2048 

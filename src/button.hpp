@@ -1,6 +1,6 @@
 #pragma once
 
-#include "type.hpp"
+#include "type.h"
 
 namespace button {
 typedef struct {

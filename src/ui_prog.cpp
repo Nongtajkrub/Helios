@@ -5,32 +5,32 @@
 #include "settings.hpp"
 
 #define OPT_MAKE(HEADER, NUM, ...)                                            \
-		ui::opt_make(                                                         \
-			&menu->opt,                                                       \
-			HEADER,                                                           \
-			&screen,                                                          \
-			LCD_ROWS,                                                         \
-			&ui->selc,                                                        \
-			&ui->e,                                                           \
-			NUM,                                                              \
-			__VA_ARGS__)     
+		ui::opt_make(                                                             \
+			&menu->opt,                                                             \
+			HEADER,                                                                 \
+			&screen,                                                                \
+			LCD_ROWS,                                                               \
+			&ui->selc,                                                              \
+			&ui->e,                                                                 \
+			NUM,                                                                    \
+			__VA_ARGS__)
 
 #define MAKE_CH_MENU_TRIG(NAME, MENU_ENUM)                                    \
-	static inline void (NAME)(void* arg) {                                    \
-		struct ui_data* ui = (struct ui_data*)arg;                            \
+	static inline void (NAME)(void* arg) {                                      \
+		struct ui_data* ui = (struct ui_data*)arg;                                \
                                                                               \
-		ui->on_menu = MENU_ENUM;                                              \
-		ui::selc_reset(&ui->selc);                                            \
+		ui->on_menu = (MENU_ENUM);                                                \
+		ui::selc_reset(&ui->selc);                                                \
 	}                                                                         
 
 #define DEF_MENU_LOOP(MENU)                                                   \
-	do {                                                                      \
-		if (ui->e != ui::NONE) {                                              \
-			ui::opt_show(MENU.opt);                                           \
-			ui::event_take(&ui->e);                                           \
-		}                                                                     \
-		                                                                      \
-		ui::opt_loop(MENU.opt);                                               \
+	do {                                                                        \
+		if (ui->e != ui::NONE) {                                                  \
+			ui::opt_show(MENU.opt);                                                 \
+			ui::event_take(&ui->e);                                                 \
+		}                                                                         \
+		                                                                          \
+		ui::opt_loop(MENU.opt);                                                   \
 	} while (0) 
 
 namespace program {

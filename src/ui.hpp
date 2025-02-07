@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "type.hpp"
+#include "type.h"
 #include <LiquidCrystal_I2C.h>
 
 typedef LiquidCrystal_I2C I2C;

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "type.hpp"
+#include "type.h"
 
 #include <Arduino.h>
 #include <WiFi.h>
