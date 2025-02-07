@@ -3,4 +3,5 @@
 .gcc-flags.json
 .ccls
 .ccls-cache
+.cache
 src/hidden.hpp
