@@ -139,7 +139,7 @@ static void init_color_menu(struct ui_data* ui) {
 	OPT_MAKE("Color", 5, &menu->r, &menu->g, &menu->b, &ui->back_butt);
 	ui::num_make(
 		&menu->color_val,
-		"Value",
+		"Value (Max 100)",
 		0,
 		255,
 		LCD_ROWS,

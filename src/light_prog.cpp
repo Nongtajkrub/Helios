@@ -41,7 +41,8 @@ void light_init(struct light_data* light) {
 		np::make(light->pixels[i], NP_PINS[i], 1);
 		np::begin(light->pixels[i]);
 	}
-	set_all_color(light, DEF_NP_R, DEF_NP_G, DEF_NP_B);
+	//set_all_color(light, DEF_NP_R, DEF_NP_G, DEF_NP_B);
+
 
 	// init setting
 	init_setting(light);

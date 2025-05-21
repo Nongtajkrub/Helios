@@ -57,11 +57,25 @@ static void selc_down(selector_t* selc, u8 max) {
 	}
 }
 
-static void selc_up_down_control_loop(selector_t* selc, u8 down_max, event_t* e) {
+static void selc_up_down_control_loop(selector_t* selc,
+		u8 down_max, event_t* e) 
+{
 	if (selc->up_trig(selc->arg)) {
 		selc_up(selc);
 		*e = SELC_UP;
-	} else if (selc->down_trig(selc->arg)) {
+	} else if (selc->down_trig(selc->arg) && selc->on != 100) {
+		selc_down(selc, down_max);
+		*e = SELC_DOWN;
+	}
+}
+
+static void selc_up_down_control_loop_temp(selector_t* selc,
+		u8 down_max, event_t* e) 
+{
+	if (selc->up_trig(selc->arg)) {
+		selc_up(selc);
+		*e = SELC_UP;
+	} else if (selc->down_trig(selc->arg) && selc->on != 3) {
 		selc_down(selc, down_max);
 		*e = SELC_DOWN;
 	}
@@ -133,7 +147,7 @@ static inline void opt_handle_selc(opt_t* opt) {
 }
 
 void opt_loop(opt_t* opt) {
-	selc_up_down_control_loop(opt->selc, opt->num - 1, opt->e);
+	selc_up_down_control_loop_temp(opt->selc, opt->num - 1, opt->e);
 
 	if (opt->selc->selc_trig(opt->selc->arg)) {
 		opt_handle_selc(opt);

@@ -21,8 +21,11 @@
 		#define LDR_COUNT NP_COUNT
 	#endif // #ifndef GET_GLOBAL_SETTINGS
 
-	constexpr u8 LDR_PINS[] = {32, 35, 34, 33};
-	constexpr u8 NP_PINS[] = {15, 18, 19, 17};
+	// constexpr u8 LDR_PINS[] = {32, 35, 34, 33};
+	// constexpr u8 NP_PINS[] = {19, 15, 18, 17};
+	
+	constexpr u8 LDR_PINS[] = {33, 34, 35, 32};
+	constexpr u8 NP_PINS[] = {17, 18, 15, 19};
 
 	#define NP_ROWS 2
 	#define NP_COLS 2
